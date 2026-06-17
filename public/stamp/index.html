@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Arshad Stamp Maker</title>
+  <title>Arshad Stamp Studio</title>
   <link rel="icon" type="image/svg+xml" href="logo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,20 +15,19 @@
 
   <!-- ═══════════════════ TOP BAR ═══════════════════ -->
   <header class="topbar">
-    <!-- Logo -->
     <div class="tb-section tb-left">
-      <img src="logo.svg" alt="Arshad Stamp Maker" class="logo-img">
-      <span class="logo-text">Arshad Stamp Maker</span>
+      <img src="logo.svg" alt="" class="logo-img">
+      <span class="logo-text">Stamp&nbsp;Studio</span>
     </div>
 
     <div class="tb-sep"></div>
 
-    <!-- Presets -->
-    <div class="tb-section tb-group">
+    <!-- File / Presets menu -->
+    <div class="tb-section">
       <div class="tb-presets" id="tbPresets">
-        <button class="tb-dropdown" id="presetsDropdown" title="Presets">
-          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h8M4 10h8M4 14h8"/></svg>
-          <span>Presets</span>
+        <button class="tb-menubtn" id="presetsDropdown" title="File / Presets">
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7l3 3v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M9 3v4h4"/></svg>
+          <span>File</span>
           <svg viewBox="0 0 10 10" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2.5 3.5l2.5 2.5 2.5-2.5"/></svg>
         </button>
         <div class="tb-dropdown-menu" id="presetsMenu" style="display:none">
@@ -50,53 +49,94 @@
       </div>
     </div>
 
-    <div class="tb-sep"></div>
-
     <input type="file" id="importConfigFile" accept=".json" style="display:none">
 
-    <!-- Spacer -->
-    <div style="flex:1"></div>
+    <div class="tb-sep"></div>
 
-    <!-- History + Help -->
-    <div class="tb-section tb-right">
-      <button class="tb-btn" id="undoBtn" title="Undo (Ctrl+Z)">
-        <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l-3-3 3-3"/><path d="M5 12h6a3 3 0 0 0 0-6H4"/></svg>
+    <!-- History cluster -->
+    <div class="tb-section tb-history">
+      <button class="tb-icon" id="undoBtn" title="Undo (Ctrl+Z)">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l-3-3 3-3"/><path d="M5 12h6a3 3 0 0 0 0-6H4"/></svg>
       </button>
-      <button class="tb-btn" id="redoBtn" title="Redo (Ctrl+Y)">
-        <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10l3-3-3-3"/><path d="M11 12H5a3 3 0 0 1 0-6h7"/></svg>
+      <button class="tb-icon" id="redoBtn" title="Redo (Ctrl+Y)">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10l3-3-3-3"/><path d="M11 12H5a3 3 0 0 1 0-6h7"/></svg>
+      </button>
+    </div>
+
+    <!-- Centered document title placeholder (spacer) -->
+    <div class="tb-doc-title">Untitled Stamp</div>
+
+    <div class="tb-section tb-right">
+      <button class="tb-icon" id="helpBtn" title="Shortcuts (?)">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M6.3 6.2a1.7 1.7 0 0 1 3.4 0c0 1.2-1.7 1.4-1.7 2.6"/><circle cx="8" cy="11.3" r=".5" fill="currentColor"/></svg>
+      </button>
+      <button class="tb-icon tb-icon--danger" id="resetBtn" title="Reset everything">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a5 5 0 1 0 1.5-3.5L3 6"/><path d="M3 3v3h3"/></svg>
       </button>
       <div class="tb-sep"></div>
-      <button class="tb-btn tb-btn--danger" id="resetBtn" title="Reset">Reset</button>
-      <button class="tb-btn" id="helpBtn" title="Shortcuts (?)">?</button>
+      <button class="tb-btn-ghost" id="saveBtn" title="Save (Ctrl+S)">
+        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M13 14H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h7l3 3v9a1 1 0 0 1-1 1z"/><path d="M9 2v3h3M5 10h6M5 13h6"/></svg>
+        Save
+      </button>
+      <button class="tb-btn-primary" id="exportQuick" title="Quick export PNG">
+        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 2v8M5 7l3 3 3-3M2 13h12"/></svg>
+        Export
+      </button>
     </div>
   </header>
 
   <!-- ═══════════════════ WORK AREA ═══════════════════ -->
   <div class="work-area">
 
-    <!-- ─── LEFT SIDEBAR ─── -->
+    <!-- ─── TOOL RAIL (icon-only, Figma-style) ─── -->
+    <nav class="toolrail" aria-label="Tools">
+      <button class="tool" data-tool-panel="layers" title="Layers (L)" data-active="true">
+        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><path d="M10 3l7 4-7 4-7-4 7-4z"/><path d="M3 11l7 4 7-4"/><path d="M3 15l7 4 7-4"/></svg>
+      </button>
+      <button class="tool" data-tool-panel="shapes" title="Shapes (S)">
+        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><circle cx="14" cy="14" r="3.5"/><path d="M14 3l4 7h-8z"/></svg>
+      </button>
+      <button class="tool" data-tool-panel="add" title="Add Layer (A)">
+        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M10 4v12M4 10h12"/></svg>
+      </button>
+      <button class="tool" data-tool-panel="rings" title="Rings (R)">
+        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7.5"/><circle cx="10" cy="10" r="5"/><circle cx="10" cy="10" r="2.5"/></svg>
+      </button>
+      <button class="tool" data-tool-panel="style" title="Color & Style (C)">
+        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2a8 8 0 0 0 0 16c1 0 1.5-.7 1.5-1.5 0-.8-.6-1-.6-1.7 0-.8.7-1.3 1.6-1.3H14a4 4 0 0 0 4-4c0-4-3.6-7.5-8-7.5z"/><circle cx="6" cy="9" r="1" fill="currentColor"/><circle cx="9" cy="5.5" r="1" fill="currentColor"/><circle cx="13" cy="6" r="1" fill="currentColor"/></svg>
+      </button>
+      <button class="tool" data-tool-panel="effects" title="Effects (E)">
+        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l1 3 3 1-3 1-1 3-1-3-3-1 3-1z"/><path d="M14 9l.8 2.2L17 12l-2.2.8L14 15l-.8-2.2L11 12l2.2-.8z"/></svg>
+      </button>
+      <div class="tool-spacer"></div>
+      <button class="tool" data-tool-panel="export" title="Export (X)">
+        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v9M6 8l4 4 4-4M3 17h14"/></svg>
+      </button>
+    </nav>
+
+    <!-- ─── LEFT CONTEXTUAL PANEL (toggled by tool rail) ─── -->
     <aside class="left-sidebar" id="leftSidebar">
 
-      <!-- Shapes grid zone — drag to add -->
-      <div class="ls-section ls-shape-zone" id="lsShapeZone">
-        <div class="ls-zone-title">Shapes</div>
-        <div class="ls-zone-grid" id="lsShapeGrid">
-          <div class="ls-zone-item" data-add-shape="star" title="Star" draggable="true">★</div>
-          <div class="ls-zone-item" data-add-shape="pentagon" title="Pentagon" draggable="true">⬠</div>
-          <div class="ls-zone-item" data-add-shape="hexagon" title="Hexagon" draggable="true">⬡</div>
-          <div class="ls-zone-item" data-add-shape="diamond" title="Diamond" draggable="true">◆</div>
-          <div class="ls-zone-item" data-add-shape="cross" title="Cross" draggable="true">✚</div>
-          <div class="ls-zone-item" data-add-shape="circle" title="Circle" draggable="true">●</div>
-        </div>
-      </div>
-
-      <!-- Add Layer buttons -->
-      <div class="ls-section">
+      <!-- Add Layer quick actions -->
+      <div class="ls-section ls-pad" data-panel-group="add">
+        <div class="ls-zone-title">Add Layer</div>
         <div class="layer-actions">
-          <button class="action-btn" id="addCurved">+ Arc</button>
-          <button class="action-btn" id="addLine">+ Line</button>
-          <button class="action-btn" id="addShape">+ Shape</button>
-          <button class="action-btn" id="importLogo">+ Logo</button>
+          <button class="action-btn" id="addCurved">
+            <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 11a6 6 0 0 1 12 0"/></svg>
+            Arc Text
+          </button>
+          <button class="action-btn" id="addLine">
+            <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 8h12"/><path d="M4 5v6M12 5v6"/></svg>
+            Straight Text
+          </button>
+          <button class="action-btn" id="addShape">
+            <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M8 2l1.8 3.6 4 .6-2.9 2.8.7 4L8 11l-3.6 2 .7-4L2.2 6.2l4-.6z"/></svg>
+            Shape
+          </button>
+          <button class="action-btn" id="importLogo">
+            <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1"/><circle cx="6" cy="7" r="1.2"/><path d="M2 11l3.5-3 3 2.5L11 8l3 3"/></svg>
+            Logo / Image
+          </button>
         </div>
         <div class="shape-picker-mini" id="shapePickerMini" style="display:none">
           <button class="sp-item" data-shape="star" title="Star">&#9733;</button>
@@ -108,46 +148,61 @@
         </div>
       </div>
 
-      <!-- Dynamic context panel — shape/image layer tools only -->
-      <div id="lsContext" class="ls-section ls-context"></div>
+      <!-- Shapes drag library -->
+      <div class="ls-section ls-shape-zone ls-pad" id="lsShapeZone" data-panel-group="shapes">
+        <div class="ls-zone-title">Shape Library <span class="ls-hint">drag to canvas</span></div>
+        <div class="ls-zone-grid" id="lsShapeGrid">
+          <div class="ls-zone-item" data-add-shape="star" title="Star" draggable="true">★</div>
+          <div class="ls-zone-item" data-add-shape="pentagon" title="Pentagon" draggable="true">⬠</div>
+          <div class="ls-zone-item" data-add-shape="hexagon" title="Hexagon" draggable="true">⬡</div>
+          <div class="ls-zone-item" data-add-shape="diamond" title="Diamond" draggable="true">◆</div>
+          <div class="ls-zone-item" data-add-shape="cross" title="Cross" draggable="true">✚</div>
+          <div class="ls-zone-item" data-add-shape="circle" title="Circle" draggable="true">●</div>
+        </div>
+      </div>
 
-    </aside><!-- /left-sidebar -->
-    <div class="sidebar-resize" id="sidebarResize" title="Drag to resize sidebar"></div>
+      <!-- Dynamic context panel — shape/image layer tools -->
+      <div id="lsContext" class="ls-section ls-context" data-panel-group="layers"></div>
+
+    </aside>
+    <div class="sidebar-resize" id="sidebarResize" title="Drag to resize"></div>
 
     <!-- ─── CANVAS VIEWPORT ─── -->
     <section class="viewport" id="viewport" aria-label="Stamp canvas">
       <div class="stage" id="stage">
         <canvas id="stampCanvas"></canvas>
       </div>
+
+      <!-- Floating zoom HUD -->
       <div class="zoombar" role="toolbar" aria-label="Zoom controls">
-        <button id="zoomOut" title="Zoom out">−</button>
+        <button id="zoomOut" title="Zoom out (-)">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 8h8"/></svg>
+        </button>
         <span id="zoomRead" class="zoom-label">100%</span>
-        <button id="zoomIn" title="Zoom in">+</button>
+        <button id="zoomIn" title="Zoom in (+)">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 4v8M4 8h8"/></svg>
+        </button>
         <div class="zoombar-sep"></div>
         <button id="zoomFit" title="Fit (F)">Fit</button>
         <button id="zoom100" title="100% (0)">1:1</button>
       </div>
     </section>
 
-    <!-- ─── RIGHT PANEL ─── -->
+    <!-- ─── RIGHT PROPERTIES PANEL ─── -->
     <aside class="right-panel" id="rightPanel">
 
-      <!-- Quick actions -->
-      <div class="rp-quick-actions">
-        <button class="rp-quick-btn rp-quick-btn--primary" id="exportQuick" title="Quick export PNG">
-          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8 2v8M5 7l3 3 3-3M2 12h12"/></svg>
-          Export
-        </button>
-        <button class="rp-quick-btn rp-quick-btn--save" id="saveBtn" title="Save (Ctrl+S)">
-          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M13 14H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h7l3 3v9a1 1 0 0 1-1 1z"/><path d="M9 2v3h3M5 10h6M5 13h6"/></svg>
-          Save
-        </button>
+      <!-- Keep quick action IDs for JS, but visually hide (moved to topbar) -->
+      <div class="rp-quick-actions" style="display:none">
+        <button id="exportQuickStub" style="display:none"></button>
       </div>
 
-      <!-- Layers — always open -->
+      <!-- Layers -->
       <div class="rp-section rp-open" data-rp="layers">
         <button class="rp-header">
-          <span class="rp-title">Layers</span>
+          <span class="rp-title">
+            <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M7 2l5 3-5 3-5-3 5-3z"/><path d="M2 8l5 3 5-3"/></svg>
+            Layers
+          </span>
           <svg class="rp-chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
         </button>
         <div class="rp-body">
@@ -155,63 +210,68 @@
         </div>
       </div>
 
-      <!-- Text Props — shown when text layer selected -->
+      <!-- Text Properties (contextual) -->
       <div class="rp-section rp-open" data-rp="textProps" id="rpTextProps" style="display:none">
         <button class="rp-header">
-          <span class="rp-title" id="rpTextTitle">Text</span>
+          <span class="rp-title">
+            <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4V3h8v1M7 3v9M5 12h4"/></svg>
+            <span id="rpTextTitle">Text</span>
+          </span>
           <svg class="rp-chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
         </button>
         <div class="rp-body" id="rpTextBody"></div>
       </div>
 
-      <!-- Rings — always open -->
+      <!-- Rings -->
       <div class="rp-section rp-open" data-rp="rings">
         <button class="rp-header">
-          <span class="rp-title">Rings</span>
+          <span class="rp-title">
+            <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7" cy="7" r="5.5"/><circle cx="7" cy="7" r="3"/></svg>
+            Rings
+          </span>
           <svg class="rp-chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
         </button>
         <div class="rp-body" id="rpRingsBody">
-          <!-- Ring 1 — Outer -->
           <div class="rp-ring-row" id="rpRingRow1">
             <div class="rp-ring-row-head">
               <span class="ring-dot ring-dot-outer"></span>
               <span class="prop-label">Outer</span>
-              <span class="prop-label" id="rpRing1Val">1.6</span>
+              <span class="prop-label rp-ring-val" id="rpRing1Val">1.6</span>
             </div>
             <div class="slider-row"><input type="range" min="0.1" max="5" step="0.1" id="rpRing1Width"></div>
           </div>
-          <!-- Ring 2 — Middle -->
           <div class="rp-ring-row" id="rpRingRow2" style="display:none">
             <div class="rp-ring-row-head">
               <span class="ring-dot ring-dot-inner"></span>
               <span class="prop-label">Middle</span>
-              <span class="prop-label" id="rpRing2Val">0.8</span>
+              <span class="prop-label rp-ring-val" id="rpRing2Val">0.8</span>
             </div>
             <div class="slider-row"><input type="range" min="0" max="5" step="0.1" id="rpRing2Width"></div>
           </div>
-          <!-- Ring 3 — Center -->
           <div class="rp-ring-row" id="rpRingRow3" style="display:none">
             <div class="rp-ring-row-head">
               <span class="ring-dot ring-dot-inner2"></span>
               <span class="prop-label">Center</span>
-              <span class="prop-label" id="rpRing3Val">0.5</span>
+              <span class="prop-label rp-ring-val" id="rpRing3Val">0.5</span>
             </div>
             <div class="slider-row"><input type="range" min="0" max="5" step="0.1" id="rpRing3Width"></div>
           </div>
-          <!-- Global gap -->
           <div class="rp-ring-gap" id="rpRingGap" style="display:none">
             <div class="prop-section">
-              <div class="prop-label">Gap</div>
+              <div class="prop-label">Gap between rings</div>
               <div class="slider-row"><input type="range" min="0" max="10" step="0.1" id="rpRingGapInput"><input type="number" min="0" max="10" step="0.1" id="rpRingGapNum"></div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Stamp — always visible -->
+      <!-- Stamp -->
       <div class="rp-section rp-open" data-rp="stamp" id="rpStampSection">
         <button class="rp-header">
-          <span class="rp-title">Stamp</span>
+          <span class="rp-title">
+            <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><rect x="2" y="9" width="10" height="3" rx=".5"/><path d="M5 9V6a2 2 0 1 1 4 0v3"/></svg>
+            Stamp
+          </span>
           <svg class="rp-chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
         </button>
         <div class="rp-body" id="rpStampBody"></div>
@@ -219,20 +279,26 @@
 
       <!-- Guides -->
       <div class="rp-section rp-open" data-rp="guides">
-        <div class="prop-section" style="padding:6px 12px">
-          <label class="effect-toggle"><input type="checkbox" id="showGuides" checked> Guides</label>
+        <div class="prop-section" style="padding:10px 14px">
+          <label class="effect-toggle">
+            <input type="checkbox" id="showGuides" checked>
+            <span>Show alignment guides</span>
+          </label>
         </div>
       </div>
 
-      <!-- Style — collapsible -->
+      <!-- Style / Color -->
       <div class="rp-section" data-rp="style">
         <button class="rp-header">
-          <span class="rp-title">Style</span>
+          <span class="rp-title">
+            <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1.5a5.5 5.5 0 0 0 0 11c.7 0 1-.5 1-1 0-.6-.4-.7-.4-1.2 0-.5.5-.9 1.1-.9h.6a2.7 2.7 0 0 0 2.7-2.7c0-2.7-2.5-5.2-5-5.2z"/></svg>
+            Color & Effects
+          </span>
           <svg class="rp-chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
         </button>
         <div class="rp-body">
           <div class="prop-section">
-            <div class="prop-label">Ink Color</div>
+            <div class="prop-label">Ink color</div>
             <div class="color-swatches" id="swatchRow"></div>
             <div class="color-inputs">
               <input type="color" data-bind="inkColor" id="inkColorPicker" title="Color picker">
@@ -249,55 +315,55 @@
           <div class="prop-section">
             <div class="prop-label">Effects</div>
             <div class="effect-item">
-              <label class="effect-toggle"><input type="checkbox" data-bind="inkBleed"> Ink bleed</label>
+              <label class="effect-toggle"><input type="checkbox" data-bind="inkBleed"> <span>Ink bleed</span></label>
               <div class="slider-row mt4"><input type="range" min="0" max="2" step="0.05" data-bind="inkBleedAmount"><input type="number" min="0" max="2" step="0.05" data-bind="inkBleedAmount"></div>
             </div>
             <div class="effect-item">
-              <label class="effect-toggle"><input type="checkbox" data-bind="grungeTexture"> Grunge</label>
+              <label class="effect-toggle"><input type="checkbox" data-bind="grungeTexture"> <span>Grunge texture</span></label>
               <div class="slider-row mt4"><input type="range" min="0" max="1" step="0.01" data-bind="grungeAmount"><input type="number" min="0" max="1" step="0.01" data-bind="grungeAmount"></div>
             </div>
             <div class="effect-item">
-              <label class="effect-toggle"><input type="checkbox" data-bind="rotationJitter"> Jitter</label>
+              <label class="effect-toggle"><input type="checkbox" data-bind="rotationJitter"> <span>Rotation jitter</span></label>
               <div class="slider-row mt4"><input type="range" min="0" max="1.5" step="0.05" data-bind="jitterDegrees"><input type="number" min="0" max="1.5" step="0.05" data-bind="jitterDegrees"></div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Export — collapsible -->
+      <!-- Export -->
       <div class="rp-section" data-rp="export">
         <button class="rp-header">
-          <span class="rp-title">Export</span>
+          <span class="rp-title">
+            <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v7M4.5 6.5L7 9l2.5-2.5M2 12h10"/></svg>
+            Export
+          </span>
           <svg class="rp-chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
         </button>
         <div class="rp-body">
           <div class="prop-section">
-            <div class="prop-label">Export Settings</div>
-            <div class="slider-group">
-              <label class="sub-label">Resolution</label>
-              <select data-bind="dpi" id="dpiSelect">
-                <option value="72">72 DPI (screen)</option>
-                <option value="150">150 DPI (web)</option>
-                <option value="300" selected>300 DPI (print)</option>
-                <option value="600">600 DPI (high quality)</option>
-                <option value="1200">1200 DPI (max)</option>
-              </select>
-            </div>
+            <div class="prop-label">Resolution</div>
+            <select data-bind="dpi" id="dpiSelect" class="select-control">
+              <option value="72">72 DPI · screen</option>
+              <option value="150">150 DPI · web</option>
+              <option value="300" selected>300 DPI · print</option>
+              <option value="600">600 DPI · high quality</option>
+              <option value="1200">1200 DPI · max</option>
+            </select>
           </div>
           <div class="prop-section">
-            <div class="prop-label">Export Image</div>
+            <div class="prop-label">Export image</div>
             <div class="export-btns">
-              <button class="export-btn export-btn--primary" id="pngTransparent">PNG — Transparent BG</button>
-              <button class="export-btn" id="pngWhite">PNG — White Background</button>
-              <button class="export-btn" id="svgExport">SVG — Vector</button>
+              <button class="export-btn export-btn--primary" id="pngTransparent">PNG · Transparent</button>
+              <button class="export-btn" id="pngWhite">PNG · White BG</button>
+              <button class="export-btn" id="svgExport">SVG · Vector</button>
             </div>
             <p class="export-note" id="exportNote">300 DPI · print-ready</p>
           </div>
           <div class="prop-section">
-            <div class="prop-label">Project</div>
+            <div class="prop-label">Project file</div>
             <div class="export-btns">
-              <button class="export-btn" id="saveConfig">Export Project (.json)</button>
-              <button class="export-btn" id="loadConfig">Import Project (.json)</button>
+              <button class="export-btn" id="saveConfig">Save Project (.json)</button>
+              <button class="export-btn" id="loadConfig">Load Project (.json)</button>
             </div>
             <input id="loadConfigFile" type="file" accept="application/json,.json" style="display:none">
           </div>
@@ -306,12 +372,11 @@
 
     </aside>
 
-  </div><!-- /work-area -->
-</div><!-- /app-shell -->
+  </div>
+</div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-<!-- SHORTCUTS MODAL -->
 <div class="shortcuts-overlay" id="shortcutsOverlay" role="dialog" aria-label="Keyboard shortcuts">
   <div class="shortcuts-modal">
     <div class="shortcuts-header">
@@ -320,7 +385,7 @@
     </div>
     <div class="shortcuts-body">
       <div class="shortcut-row"><kbd>Click</kbd><span>Select layer on canvas</span></div>
-      <div class="shortcut-row"><kbd>Drag</kbd><span>Move selected layer / Pan canvas</span></div>
+      <div class="shortcut-row"><kbd>Drag</kbd><span>Move selected / Pan canvas</span></div>
       <div class="shortcut-row"><kbd>Ctrl+Click</kbd><span>Toggle multi-select</span></div>
       <div class="shortcut-row"><kbd>F</kbd><span>Fit stamp to viewport</span></div>
       <div class="shortcut-row"><kbd>0</kbd><span>Reset zoom to 100%</span></div>
@@ -331,10 +396,73 @@
       <div class="shortcut-row"><kbd>Ctrl+Z</kbd><span>Undo</span></div>
       <div class="shortcut-row"><kbd>Ctrl+Y</kbd><span>Redo</span></div>
       <div class="shortcut-row"><kbd>Delete</kbd><span>Delete selected layer</span></div>
+      <div class="shortcut-row"><kbd>L S A R C E X</kbd><span>Switch tool panels</span></div>
       <div class="shortcut-row"><kbd>?</kbd><span>Toggle this panel</span></div>
     </div>
   </div>
 </div>
+
+<!-- Tool rail panel switcher (lightweight, isolated) -->
+<script>
+(function(){
+  const rail = document.querySelector('.toolrail');
+  if (!rail) return;
+  const groups = ['layers','shapes','add','rings','style','effects','export'];
+
+  function showPanel(name){
+    // tool rail active state
+    rail.querySelectorAll('.tool').forEach(t => {
+      t.dataset.active = (t.dataset.toolPanel === name) ? 'true' : 'false';
+    });
+
+    // Show/hide left sidebar groups
+    const leftGroups = document.querySelectorAll('[data-panel-group]');
+    let leftHasContent = false;
+    leftGroups.forEach(g => {
+      const match = (g.dataset.panelGroup === name) ||
+                    (name === 'layers' && g.dataset.panelGroup === 'layers');
+      g.style.display = match ? '' : 'none';
+      if (match) leftHasContent = true;
+    });
+    const ls = document.getElementById('leftSidebar');
+    const sr = document.getElementById('sidebarResize');
+    if (ls && sr) {
+      const collapse = !leftHasContent;
+      ls.style.display = collapse ? 'none' : '';
+      sr.style.display = collapse ? 'none' : '';
+    }
+
+    // Scroll the right panel to the section matching this tool
+    const rpMap = { layers:'layers', rings:'rings', style:'style', effects:'style', export:'export' };
+    const rpKey = rpMap[name];
+    if (rpKey) {
+      const sec = document.querySelector(`.rp-section[data-rp="${rpKey}"]`);
+      if (sec) {
+        sec.classList.add('rp-open');
+        sec.scrollIntoView({ behavior:'smooth', block:'start' });
+      }
+    }
+  }
+
+  rail.addEventListener('click', e => {
+    const btn = e.target.closest('.tool');
+    if (!btn) return;
+    showPanel(btn.dataset.toolPanel);
+  });
+
+  // Keyboard shortcuts: L S A R C E X
+  document.addEventListener('keydown', e => {
+    if (e.target.matches('input,textarea,select,[contenteditable]')) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const map = { l:'layers', s:'shapes', a:'add', r:'rings', c:'style', e:'effects', x:'export' };
+    const tool = map[e.key.toLowerCase()];
+    if (tool) { e.preventDefault(); showPanel(tool); }
+  });
+
+  // Default: show Layers panel
+  showPanel('layers');
+})();
+</script>
 
 <script src="app.js"></script>
 </body>
