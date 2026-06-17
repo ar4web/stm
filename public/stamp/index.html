@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arshad Stamp Maker</title>
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&family=Tajawal:wght@200;300;400;500;700;800;900&family=Noto+Sans+Arabic:wght@100;200;300;400;500;600;700;800;900&family=Almarai:wght@400;600;700;800&family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;700;800;900&family=IBM+Plex+Arabic:wght@300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;200;300;400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@100;200;300;400;500;600;700;800;900&family=Noto+Sans+JP:wght@100;200;300;400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@100;200;300;400;500;600;700;800;900&family=Noto+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- ═══════════════════ TOP BAR ═══════════════════ -->
+  <header class="topbar">
+    <!-- Logo -->
+    <div class="tb-section tb-left">
+      <img src="logo.svg" alt="Arshad Stamp Maker" class="logo-img">
+      <span class="logo-text">Arshad Stamp Maker</span>
+    </div>
+
+    <div class="tb-sep"></div>
+
+    <!-- Presets -->
+    <div class="tb-section tb-group">
+      <div class="tb-presets" id="tbPresets">
+        <button class="tb-dropdown" id="presetsDropdown" title="Presets">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h8M4 10h8M4 14h8"/></svg>
+          <span>Presets</span>
+          <svg viewBox="0 0 10 10" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2.5 3.5l2.5 2.5 2.5-2.5"/></svg>
+        </button>
+        <div class="tb-dropdown-menu" id="presetsMenu" style="display:none">
+          <div class="tb-preset-item" data-action="save">+ Save Current as Preset</div>
+          <div class="tb-preset-sep"></div>
+          <div id="presetsList"></div>
+          <div class="tb-preset-sep"></div>
+          <div class="tb-preset-item" data-action="exportConfig">
+            <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 12h8M8 2v8M5 7l3-3 3 3"/></svg>
+            Export Config (.json)
+          </div>
+          <div class="tb-preset-item" data-action="importConfig">
+            <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 12h8M8 14V6M5 9l3 3 3-3"/></svg>
+            Import Config (.json)
+          </div>
+          <div class="tb-preset-sep"></div>
+          <div class="tb-preset-item" data-action="manage">Manage Presets…</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tb-sep"></div>
+
+    <input type="file" id="importConfigFile" accept=".json" style="display:none">
+
+    <!-- Spacer -->
+    <div style="flex:1"></div>
+
+    <!-- History + Help -->
+    <div class="tb-section tb-right">
+      <button class="tb-btn" id="undoBtn" title="Undo (Ctrl+Z)">
+        <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l-3-3 3-3"/><path d="M5 12h6a3 3 0 0 0 0-6H4"/></svg>
+      </button>
+      <button class="tb-btn" id="redoBtn" title="Redo (Ctrl+Y)">
+        <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10l3-3-3-3"/><path d="M11 12H5a3 3 0 0 1 0-6h7"/></svg>
+      </button>
+      <div class="tb-sep"></div>
+      <button class="tb-btn tb-btn--danger" id="resetBtn" title="Reset">Reset</button>
+      <button class="tb-btn" id="helpBtn" title="Shortcuts (?)">?</button>
+    </div>
+  </header>
+
+  <!-- ═══════════════════ WORK AREA ═══════════════════ -->
+  <div class="work-area">
+
+    <!-- ─── LEFT SIDEBAR ─── -->
+    <aside class="left-sidebar" id="leftSidebar">
+
+      <!-- Shapes grid zone — drag to add -->
+      <div class="ls-section ls-shape-zone" id="lsShapeZone">
+        <div class="ls-zone-title">Shapes</div>
+        <div class="ls-zone-grid" id="lsShapeGrid">
+          <div class="ls-zone-item" data-add-shape="star" title="Star" draggable="true">★</div>
+          <div class="ls-zone-item" data-add-shape="pentagon" title="Pentagon" draggable="true">⬠</div>
+          <div class="ls-zone-item" data-add-shape="hexagon" title="Hexagon" draggable="true">⬡</div>
+          <div class="ls-zone-item" data-add-shape="diamond" title="Diamond" draggable="true">◆</div>
+          <div class="ls-zone-item" data-add-shape="cross" title="Cross" draggable="true">✚</div>
+          <div class="ls-zone-item" data-add-shape="circle" title="Circle" draggable="true">●</div>
+        </div>
+      </div>
+
+      <!-- Add Layer buttons -->
+      <div class="ls-section">
+        <div class="layer-actions">
+          <button class="action-btn" id="addCurved">+ Arc</button>
+          <button class="action-btn" id="addLine">+ Line</button>
+          <button class="action-btn" id="addShape">+ Shape</button>
+          <button class="action-btn" id="importLogo">+ Logo</button>
+        </div>
+        <div class="shape-picker-mini" id="shapePickerMini" style="display:none">
+          <button class="sp-item" data-shape="star" title="Star">&#9733;</button>
+          <button class="sp-item" data-shape="pentagon" title="Pentagon">&#11041;</button>
+          <button class="sp-item" data-shape="hexagon" title="Hexagon">&#11042;</button>
+          <button class="sp-item" data-shape="diamond" title="Diamond">&#9670;</button>
+          <button class="sp-item" data-shape="cross" title="Cross">&#10010;</button>
+          <button class="sp-item" data-shape="circle" title="Circle">&#9679;</button>
+        </div>
+      </div>
+
+      <!-- Dynamic context panel — shape/image layer tools only -->
+      <div id="lsContext" class="ls-section ls-context"></div>
+
+    </aside><!-- /left-sidebar -->
+    <div class="sidebar-resize" id="sidebarResize" title="Drag to resize sidebar"></div>
+
+    <!-- ─── CANVAS VIEWPORT ─── -->
+    <section class="viewport" id="viewport" aria-label="Stamp canvas">
+      <div class="stage" id="stage">
+        <canvas id="stampCanvas"></canvas>
+      </div>
+      <div class="zoombar" role="toolbar" aria-label="Zoom controls">
+        <button id="zoomOut" title="Zoom out">−</button>
+        <span id="zoomRead" class="zoom-label">100%</span>
+        <button id="zoomIn" title="Zoom in">+</button>
+        <div class="zoombar-sep"></div>
+        <button id="zoomFit" title="Fit (F)">Fit</button>
+        <button id="zoom100" title="100% (0)">1:1</button>
+      </div>
+    </section>
+
+    <!-- ─── RIGHT PANEL ─── -->
+    <aside class="right-panel" id="rightPanel">
+
+      <!-- Quick actions -->
+      <div class="rp-quick-actions">
+        <button class="rp-quick-btn rp-quick-btn--primary" id="exportQuick" title="Quick export PNG">
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8 2v8M5 7l3 3 3-3M2 12h12"/></svg>
+          Export
+        </button>
+        <button class="rp-quick-btn rp-quick-btn--save" id="saveBtn" title="Save (Ctrl+S)">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M13 14H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h7l3 3v9a1 1 0 0 1-1 1z"/><path d="M9 2v3h3M5 10h6M5 13h6"/></svg>
+          Save
+        </button>
+      </div>
+
+      <!-- Layers — always open -->
+      <div class="rp-section rp-open" data-rp="layers">
+        <button class="rp-header">
+          <span class="rp-title">Layers</span>
+          <svg class="rp-chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
+        </button>
+        <div class="rp-body">
+          <div id="layerList" class="layer-list"></div>
+        </div>
+      </div>
+
+      <!-- Text Props — shown when text layer selected -->
+      <div class="rp-section rp-open" data-rp="textProps" id="rpTextProps" style="display:none">
+        <button class="rp-header">
+          <span class="rp-title" id="rpTextTitle">Text</span>
+          <svg class="rp-chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
+        </button>
+        <div class="rp-body" id="rpTextBody"></div>
+      </div>
+
+      <!-- Rings — always open -->
+      <div class="rp-section rp-open" data-rp="rings">
+        <button class="rp-header">
+          <span class="rp-title">Rings</span>
+          <svg class="rp-chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
+        </button>
+        <div class="rp-body" id="rpRingsBody">
+          <!-- Ring 1 — Outer -->
+          <div class="rp-ring-row" id="rpRingRow1">
+            <div class="rp-ring-row-head">
+              <span class="ring-dot ring-dot-outer"></span>
+              <span class="prop-label">Outer</span>
+              <span class="prop-label" id="rpRing1Val">1.6</span>
+            </div>
+            <div class="slider-row"><input type="range" min="0.1" max="5" step="0.1" id="rpRing1Width"></div>
+          </div>
+          <!-- Ring 2 — Middle -->
+          <div class="rp-ring-row" id="rpRingRow2" style="display:none">
+            <div class="rp-ring-row-head">
+              <span class="ring-dot ring-dot-inner"></span>
+              <span class="prop-label">Middle</span>
+              <span class="prop-label" id="rpRing2Val">0.8</span>
+            </div>
+            <div class="slider-row"><input type="range" min="0" max="5" step="0.1" id="rpRing2Width"></div>
+          </div>
+          <!-- Ring 3 — Center -->
+          <div class="rp-ring-row" id="rpRingRow3" style="display:none">
+            <div class="rp-ring-row-head">
+              <span class="ring-dot ring-dot-inner2"></span>
+              <span class="prop-label">Center</span>
+              <span class="prop-label" id="rpRing3Val">0.5</span>
+            </div>
+            <div class="slider-row"><input type="range" min="0" max="5" step="0.1" id="rpRing3Width"></div>
+          </div>
+          <!-- Global gap -->
+          <div class="rp-ring-gap" id="rpRingGap" style="display:none">
+            <div class="prop-section">
+              <div class="prop-label">Gap</div>
+              <div class="slider-row"><input type="range" min="0" max="10" step="0.1" id="rpRingGapInput"><input type="number" min="0" max="10" step="0.1" id="rpRingGapNum"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stamp — always visible -->
+      <div class="rp-section rp-open" data-rp="stamp" id="rpStampSection">
+        <button class="rp-header">
+          <span class="rp-title">Stamp</span>
+          <svg class="rp-chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
+        </button>
+        <div class="rp-body" id="rpStampBody"></div>
+      </div>
+
+      <!-- Guides -->
+      <div class="rp-section rp-open" data-rp="guides">
+        <div class="prop-section" style="padding:6px 12px">
+          <label class="effect-toggle"><input type="checkbox" id="showGuides" checked> Guides</label>
+        </div>
+      </div>
+
+      <!-- Style — collapsible -->
+      <div class="rp-section" data-rp="style">
+        <button class="rp-header">
+          <span class="rp-title">Style</span>
+          <svg class="rp-chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
+        </button>
+        <div class="rp-body">
+          <div class="prop-section">
+            <div class="prop-label">Ink Color</div>
+            <div class="color-swatches" id="swatchRow"></div>
+            <div class="color-inputs">
+              <input type="color" data-bind="inkColor" id="inkColorPicker" title="Color picker">
+              <input type="text" data-bind="inkColor" id="inkColorHex" maxlength="7" placeholder="#1e3a8a">
+            </div>
+          </div>
+          <div class="prop-section">
+            <div class="prop-label">Opacity</div>
+            <div class="slider-row">
+              <input type="range" min="5" max="100" step="1" data-bind="opacity">
+              <input type="number" min="5" max="100" step="1" data-bind="opacity">
+            </div>
+          </div>
+          <div class="prop-section">
+            <div class="prop-label">Effects</div>
+            <div class="effect-item">
+              <label class="effect-toggle"><input type="checkbox" data-bind="inkBleed"> Ink bleed</label>
+              <div class="slider-row mt4"><input type="range" min="0" max="2" step="0.05" data-bind="inkBleedAmount"><input type="number" min="0" max="2" step="0.05" data-bind="inkBleedAmount"></div>
+            </div>
+            <div class="effect-item">
+              <label class="effect-toggle"><input type="checkbox" data-bind="grungeTexture"> Grunge</label>
+              <div class="slider-row mt4"><input type="range" min="0" max="1" step="0.01" data-bind="grungeAmount"><input type="number" min="0" max="1" step="0.01" data-bind="grungeAmount"></div>
+            </div>
+            <div class="effect-item">
+              <label class="effect-toggle"><input type="checkbox" data-bind="rotationJitter"> Jitter</label>
+              <div class="slider-row mt4"><input type="range" min="0" max="1.5" step="0.05" data-bind="jitterDegrees"><input type="number" min="0" max="1.5" step="0.05" data-bind="jitterDegrees"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Export — collapsible -->
+      <div class="rp-section" data-rp="export">
+        <button class="rp-header">
+          <span class="rp-title">Export</span>
+          <svg class="rp-chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
+        </button>
+        <div class="rp-body">
+          <div class="prop-section">
+            <div class="prop-label">Export Settings</div>
+            <div class="slider-group">
+              <label class="sub-label">Resolution</label>
+              <select data-bind="dpi" id="dpiSelect">
+                <option value="72">72 DPI (screen)</option>
+                <option value="150">150 DPI (web)</option>
+                <option value="300" selected>300 DPI (print)</option>
+                <option value="600">600 DPI (high quality)</option>
+                <option value="1200">1200 DPI (max)</option>
+              </select>
+            </div>
+          </div>
+          <div class="prop-section">
+            <div class="prop-label">Export Image</div>
+            <div class="export-btns">
+              <button class="export-btn export-btn--primary" id="pngTransparent">PNG — Transparent BG</button>
+              <button class="export-btn" id="pngWhite">PNG — White Background</button>
+              <button class="export-btn" id="svgExport">SVG — Vector</button>
+            </div>
+            <p class="export-note" id="exportNote">300 DPI · print-ready</p>
+          </div>
+          <div class="prop-section">
+            <div class="prop-label">Project</div>
+            <div class="export-btns">
+              <button class="export-btn" id="saveConfig">Export Project (.json)</button>
+              <button class="export-btn" id="loadConfig">Import Project (.json)</button>
+            </div>
+            <input id="loadConfigFile" type="file" accept="application/json,.json" style="display:none">
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+  </div><!-- /work-area -->
+</div><!-- /app-shell -->
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<!-- SHORTCUTS MODAL -->
+<div class="shortcuts-overlay" id="shortcutsOverlay" role="dialog" aria-label="Keyboard shortcuts">
+  <div class="shortcuts-modal">
+    <div class="shortcuts-header">
+      <span class="prop-label">Keyboard Shortcuts</span>
+      <button class="shortcuts-close" id="shortcutsClose" aria-label="Close">&times;</button>
+    </div>
+    <div class="shortcuts-body">
+      <div class="shortcut-row"><kbd>Click</kbd><span>Select layer on canvas</span></div>
+      <div class="shortcut-row"><kbd>Drag</kbd><span>Move selected layer / Pan canvas</span></div>
+      <div class="shortcut-row"><kbd>Ctrl+Click</kbd><span>Toggle multi-select</span></div>
+      <div class="shortcut-row"><kbd>F</kbd><span>Fit stamp to viewport</span></div>
+      <div class="shortcut-row"><kbd>0</kbd><span>Reset zoom to 100%</span></div>
+      <div class="shortcut-row"><kbd>+</kbd> / <kbd>-</kbd><span>Zoom in / out</span></div>
+      <div class="shortcut-row"><kbd>G</kbd><span>Toggle alignment guides</span></div>
+      <div class="shortcut-row"><kbd>Ctrl+S</kbd><span>Save project</span></div>
+      <div class="shortcut-row"><kbd>Ctrl+A</kbd><span>Select all layers</span></div>
+      <div class="shortcut-row"><kbd>Ctrl+Z</kbd><span>Undo</span></div>
+      <div class="shortcut-row"><kbd>Ctrl+Y</kbd><span>Redo</span></div>
+      <div class="shortcut-row"><kbd>Delete</kbd><span>Delete selected layer</span></div>
+      <div class="shortcut-row"><kbd>?</kbd><span>Toggle this panel</span></div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
