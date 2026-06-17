@@ -523,14 +523,12 @@ function drawCurvedLayer(layer, cx, cy, color, rng) {
   const ry = sz.h / 2;
 
   let textRx, textRy;
-  if (cfg.shape === 'oval') {
-    const inset = rx - layer.radiusMm;
-    textRx = mmPx(layer.radiusMm);
-    textRy = mmPx(Math.max(2, ry - inset));
-  } else {
-    textRx = mmPx(layer.radiusMm);
-    textRy = mmPx(layer.radiusMm);
+  {
+    const e = textEllipseMm(layer);
+    textRx = mmPx(e.rx);
+    textRy = mmPx(e.ry);
   }
+
 
   const draw = () => {
     for (let x = 0; x < sw; x += slice) {
@@ -847,15 +845,10 @@ function drawEditorOverlays() {
 
     if (ml.mode === 'curved') {
       ctx.save();
-      const mlSz = stampSize();
-      let mlRx, mlRy;
-      if (cfg.shape === 'oval') {
-        mlRx = ml.radiusMm;
-        mlRy = Math.max(2, mlSz.h / 2 - (mlSz.w / 2 - ml.radiusMm));
-      } else {
-        mlRx = ml.radiusMm;
-        mlRy = ml.radiusMm;
-      }
+      const _e = textEllipseMm(ml);
+      const mlRx = _e.rx;
+      const mlRy = _e.ry;
+
       ctx.strokeStyle = isPrimary ? 'rgba(99,102,241,0.7)' : 'rgba(99,102,241,0.35)';
       ctx.lineWidth = isPrimary ? 2 : 1.2;
       ctx.setLineDash(isPrimary ? [5, 5] : [3, 4]);
@@ -892,16 +885,11 @@ function drawEditorOverlays() {
     const theta1 = l.startAngle * DEG;
     const theta2 = l.endAngle * DEG;
     const thetaM = (l.startAngle + (l.endAngle - l.startAngle) / 2) * DEG;
-    const lSz = stampSize();
-    let lRx, lRy;
-    if (cfg.shape === 'oval') {
-      lRx = l.radiusMm;
-      lRy = Math.max(2, lSz.h / 2 - (lSz.w / 2 - l.radiusMm));
-    } else {
-      lRx = l.radiusMm;
-      lRy = l.radiusMm;
-    }
+    const _le = textEllipseMm(l);
+    const lRx = _le.rx;
+    const lRy = _le.ry;
     const lRxPx = mmPx(lRx), lRyPx = mmPx(lRy);
+
 
     const handles = [
       { x: cx + Math.cos(theta1) * lRxPx, y: cy + Math.sin(theta1) * lRyPx, role: 'start' },
@@ -940,15 +928,10 @@ function drawEditorOverlays() {
     let eyeX, eyeY;
     if (eyeLayer.mode === 'curved') {
       const thetaM = ((eyeLayer.startAngle + eyeLayer.endAngle) / 2) * DEG;
-      const eyeSz = stampSize();
-      let eyeRx, eyeRy;
-      if (cfg.shape === 'oval') {
-        eyeRx = eyeLayer.radiusMm;
-        eyeRy = Math.max(2, eyeSz.h / 2 - (eyeSz.w / 2 - eyeLayer.radiusMm));
-      } else {
-        eyeRx = eyeLayer.radiusMm;
-        eyeRy = eyeLayer.radiusMm;
-      }
+      const _ee = textEllipseMm(eyeLayer);
+      const eyeRx = _ee.rx;
+      const eyeRy = _ee.ry;
+
       eyeX = cx + Math.cos(thetaM) * mmPx(eyeRx) + 16;
       eyeY = cy + Math.sin(thetaM) * mmPx(eyeRy) + 16;
     } else {
