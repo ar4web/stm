@@ -439,6 +439,25 @@ function drawGeometry(cx, cy, wPx, hPx, color) {
   for both curved and straight text, and fixes the blurry
   rendering bug that came from re-rendering per-column.
 */
+/*
+  textEllipseMm:
+  Single source of truth for the ellipse a curved layer rides on.
+  Returns { rx, ry } in MM. For circles rx === ry === radiusMm.
+  For ovals we preserve the ring's eccentricity by scaling ry with
+  the stamp's aspect ratio, so the text traces the same curve as
+  the ring instead of drifting onto an unrelated ellipse.
+*/
+function textEllipseMm(layer) {
+  const sz = stampSize();      // {w, h} in mm
+  const sRx = sz.w / 2;
+  const sRy = sz.h / 2;
+  const r = layer.radiusMm;
+  if (cfg.shape === 'oval' && sRx > 0) {
+    return { rx: r, ry: Math.max(0.5, r * (sRy / sRx)) };
+  }
+  return { rx: r, ry: r };
+}
+
 function buildTextStrip(layer, color) {
   const fontPx  = mmPx(layer.sizeMm);
   const fontStr = `${safeWeight(layer.font, layer.weight)} ${fontPx}px "${layer.font}"`;
