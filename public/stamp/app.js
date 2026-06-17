@@ -1144,15 +1144,10 @@ function bindPanZoom() {
       let eyeX, eyeY;
       if (l.mode === 'curved') {
         const thetaM = ((l.startAngle + l.endAngle) / 2) * DEG;
-        const sz2 = stampSize();
-        let eyeRx, eyeRy;
-        if (cfg.shape === 'oval') {
-          eyeRx = l.radiusMm;
-          eyeRy = Math.max(2, sz2.h / 2 - (sz2.w / 2 - l.radiusMm));
-        } else {
-          eyeRx = l.radiusMm;
-          eyeRy = l.radiusMm;
-        }
+        const _ee = textEllipseMm(l);
+        const eyeRx = _ee.rx;
+        const eyeRy = _ee.ry;
+
         eyeX = cx + Math.cos(thetaM) * mmPx(eyeRx) + 16;
         eyeY = cy + Math.sin(thetaM) * mmPx(eyeRy) + 16;
       } else {
@@ -1171,15 +1166,10 @@ function bindPanZoom() {
       const sl = selLayer();
       if (sl.mode === 'curved') {
         const thetaM = ((sl.startAngle + sl.endAngle) / 2) * DEG;
-        const sz2 = stampSize();
-        let eyeRx, eyeRy;
-        if (cfg.shape === 'oval') {
-          eyeRx = sl.radiusMm;
-          eyeRy = Math.max(2, sz2.h / 2 - (sz2.w / 2 - sl.radiusMm));
-        } else {
-          eyeRx = sl.radiusMm;
-          eyeRy = sl.radiusMm;
-        }
+        const _se = textEllipseMm(sl);
+        const eyeRx = _se.rx;
+        const eyeRy = _se.ry;
+
         eyeX = cx + Math.cos(thetaM) * mmPx(eyeRx) + 16;
         eyeY = cy + Math.sin(thetaM) * mmPx(eyeRy) + 16;
       } else {
@@ -1201,15 +1191,10 @@ function bindPanZoom() {
         const theta1 = l.startAngle * DEG;
         const theta2 = l.endAngle * DEG;
         const thetaM = (l.startAngle + (l.endAngle - l.startAngle) / 2) * DEG;
-        const sz3 = stampSize();
-        let hRx, hRy;
-        if (cfg.shape === 'oval') {
-          hRx = l.radiusMm;
-          hRy = Math.max(2, sz3.h / 2 - (sz3.w / 2 - l.radiusMm));
-        } else {
-          hRx = l.radiusMm;
-          hRy = l.radiusMm;
-        }
+        const _he = textEllipseMm(l);
+        const hRx = _he.rx;
+        const hRy = _he.ry;
+
         const hRxPx = mmPx(hRx), hRyPx = mmPx(hRy);
 
         const hStart = { x: cx + Math.cos(theta1) * hRxPx, y: cy + Math.sin(theta1) * hRyPx };
