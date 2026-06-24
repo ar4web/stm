@@ -2348,7 +2348,37 @@ function buildLayerList() {
       }
       buildLayerList();
       buildLayerProps();
+      // Make it obvious the editor updated.
+      const ls = document.getElementById('leftSidebar');
+      if (ls) { ls.scrollTop = 0; ls.classList.remove('flash'); void ls.offsetWidth; ls.classList.add('flash'); }
     });
+
+    // Double-click the name to rename in place.
+    const nameEl = item.querySelector('.layer-name');
+    if (nameEl) {
+      nameEl.addEventListener('dblclick', e => {
+        e.stopPropagation();
+        nameEl.contentEditable = 'true';
+        nameEl.focus();
+        document.execCommand('selectAll', false, null);
+      });
+      const commit = () => {
+        nameEl.contentEditable = 'false';
+        const l = cfg.layers.find(x => x.id === id);
+        if (!l) return;
+        const v = (nameEl.textContent || '').trim();
+        if (v) { l.name = v; l._autoName = false; }
+        else   { l.name = autoLayerName(l); l._autoName = true; }
+        buildLayerList();
+        renderLeftSidebar();
+      };
+      nameEl.addEventListener('blur', commit);
+      nameEl.addEventListener('keydown', e => {
+        if (e.key === 'Enter')  { e.preventDefault(); nameEl.blur(); }
+        if (e.key === 'Escape') { nameEl.textContent = cfg.layers.find(x => x.id === id)?.name || ''; nameEl.blur(); }
+        e.stopPropagation();
+      });
+    }
   });
 }
 
