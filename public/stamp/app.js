@@ -171,9 +171,16 @@ function fontOptHTML(sel) {
 /* ================================================================
    STATE MODEL
    ================================================================ */
+function autoLayerName(l) {
+  if (l.type === 'shape')  return (l.shapeType || 'Shape').replace(/^./, c => c.toUpperCase());
+  if (l.type === 'image')  return l.imageName || 'Image';
+  const t = (l.text || '').trim();
+  if (t) return t.length > 22 ? t.slice(0, 22) + '…' : t;
+  return l.mode === 'curved' ? 'Curved text' : 'Line text';
+}
 function makeLayer(o = {}) {
-  return Object.assign({
-    id: uid(), name: 'Text', text: 'Text',
+  const base = Object.assign({
+    id: uid(), name: '', text: 'Text',
     font: 'Arial', weight: 800,
     sizeMm: 4, letterSpacing: 0, wordSpacing: 0,
     scaleX: 1, scaleY: 1,
@@ -185,6 +192,15 @@ function makeLayer(o = {}) {
     shapeType: 'star', shapeSizeMm: 10, shapeRotation: 0, shapeFill: true, shapePoints: 5,
     imageData: null, imageWidthMm: 10, imageHeightMm: 10,
   }, o);
+  // Treat placeholder names from older code/templates as auto so they get refreshed.
+  const placeholder = !base.name || base.name === 'Text' || base.name === 'Shape' || base.name === 'Image' || base.name === 'Layer';
+  if (placeholder) {
+    base.name = autoLayerName(base);
+    base._autoName = true;
+  } else if (base._autoName === undefined) {
+    base._autoName = false;
+  }
+  return base;
 }
 
 function defaultLayers() {
