@@ -2159,7 +2159,11 @@ function bindTextContextInputs(ctx, l) {
       } else if (key === 'dir') {
         l.dir = v;
       } else if (key === 'text') {
-        l.text = v; l.name = v;
+        l.text = v;
+        if (l._autoName) l.name = autoLayerName(l);
+        buildLayerList();
+        const head = document.querySelector('#lsContext .ls-editor-name');
+        if (head && document.activeElement !== head) head.textContent = l.name;
       } else if (key === 'flip') {
         l.flip = input.checked;
       } else {
