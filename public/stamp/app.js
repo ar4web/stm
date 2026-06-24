@@ -171,9 +171,16 @@ function fontOptHTML(sel) {
 /* ================================================================
    STATE MODEL
    ================================================================ */
+function autoLayerName(l) {
+  if (l.type === 'shape')  return (l.shapeType || 'Shape').replace(/^./, c => c.toUpperCase());
+  if (l.type === 'image')  return l.imageName || 'Image';
+  const t = (l.text || '').trim();
+  if (t) return t.length > 22 ? t.slice(0, 22) + '…' : t;
+  return l.mode === 'curved' ? 'Curved text' : 'Line text';
+}
 function makeLayer(o = {}) {
-  return Object.assign({
-    id: uid(), name: 'Text', text: 'Text',
+  const base = Object.assign({
+    id: uid(), name: '', text: 'Text',
     font: 'Arial', weight: 800,
     sizeMm: 4, letterSpacing: 0, wordSpacing: 0,
     scaleX: 1, scaleY: 1,
@@ -185,6 +192,15 @@ function makeLayer(o = {}) {
     shapeType: 'star', shapeSizeMm: 10, shapeRotation: 0, shapeFill: true, shapePoints: 5,
     imageData: null, imageWidthMm: 10, imageHeightMm: 10,
   }, o);
+  // Treat placeholder names from older code/templates as auto so they get refreshed.
+  const placeholder = !base.name || base.name === 'Text' || base.name === 'Shape' || base.name === 'Image' || base.name === 'Layer';
+  if (placeholder) {
+    base.name = autoLayerName(base);
+    base._autoName = true;
+  } else if (base._autoName === undefined) {
+    base._autoName = false;
+  }
+  return base;
 }
 
 function defaultLayers() {
@@ -1782,34 +1798,55 @@ function renderLeftSidebar() {
   if (!ctx) return;
   const l = selLayer();
 
-  // Text layer selected → show text tools in right panel
-  if (l && (l.mode === 'curved' || l.mode === 'straight')) {
-    ctx.innerHTML = '';
-    renderRightTextProps(l);
-    updateRingControls();
-    return;
-  }
-  // Shape/image layer selected → show basic tools
-  if (l && l.type === 'shape') {
-    ctx.innerHTML = buildShapeLayerContextHTML(l);
+  // Always hide the right-side text props — single editor lives in the left sidebar.
+  const rpTextProps = document.getElementById('rpTextProps');
+  if (rpTextProps) rpTextProps.style.display = 'none';
+
+  let html = '';
+  if (l && (l.mode === 'curved' || l.mode === 'straight') && l.type !== 'shape' && l.type !== 'image') {
+    html = `<div class="ls-editor-head"><span class="ls-editor-tag">${l.mode === 'curved' ? 'ARC' : 'LINE'}</span><span class="ls-editor-name" title="Double-click to rename">${escapeHtml(l.name || 'Text')}</span></div>` + buildTextContextHTML(l);
+    ctx.innerHTML = html;
+    bindTextContextInputs(ctx, l);
+  } else if (l && l.type === 'shape') {
+    html = `<div class="ls-editor-head"><span class="ls-editor-tag">SHAPE</span><span class="ls-editor-name" title="Double-click to rename">${escapeHtml(l.name || 'Shape')}</span></div>` + buildShapeLayerContextHTML(l);
+    ctx.innerHTML = html;
     bindShapeLayerContextInputs(ctx, l);
-    initNumberInputs(ctx);
-    renderRightTextProps(null);
-    updateRingControls();
-    return;
-  }
-  if (l && l.type === 'image') {
-    ctx.innerHTML = buildImageContextHTML(l);
+  } else if (l && l.type === 'image') {
+    html = `<div class="ls-editor-head"><span class="ls-editor-tag">IMG</span><span class="ls-editor-name" title="Double-click to rename">${escapeHtml(l.name || 'Image')}</span></div>` + buildImageContextHTML(l);
+    ctx.innerHTML = html;
     bindImageContextInputs(ctx, l);
-    initNumberInputs(ctx);
-    renderRightTextProps(null);
-    updateRingControls();
-    return;
+  } else {
+    // Nothing selected → show stamp editor so the panel is never blank.
+    html = `<div class="ls-editor-head"><span class="ls-editor-tag">STAMP</span><span class="ls-editor-name">Stamp settings</span></div>` + buildStampContextHTML();
+    ctx.innerHTML = html;
+    bindStampContextInputs(ctx);
   }
-  // Nothing selected → show stamp tools in right panel
-  ctx.innerHTML = '';
+  initNumberInputs(ctx);
+
+  // Inline rename on the editor head
+  const nameEl = ctx.querySelector('.ls-editor-name');
+  if (nameEl && l) {
+    nameEl.addEventListener('dblclick', () => {
+      nameEl.contentEditable = 'true';
+      nameEl.focus();
+      document.execCommand('selectAll', false, null);
+    });
+    const commit = () => {
+      nameEl.contentEditable = 'false';
+      const v = (nameEl.textContent || '').trim();
+      if (v) { l.name = v; l._autoName = false; }
+      else   { l.name = autoLayerName(l); l._autoName = true; }
+      buildLayerList();
+    };
+    nameEl.addEventListener('blur', commit);
+    nameEl.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); nameEl.blur(); }
+      if (e.key === 'Escape') { nameEl.textContent = l.name; nameEl.blur(); }
+    });
+  }
+
+  // Always render right-panel stamp section too (kept as a global structural panel).
   renderRightStampProps();
-  renderRightTextProps(null);
   updateRingControls();
 }
 
@@ -1821,23 +1858,11 @@ function renderRightStampProps() {
   initNumberInputs(rpStampBody);
 }
 
-function renderRightTextProps(l) {
+// Deprecated — text props now live in the left sidebar. Kept as a no-op
+// so any remaining call sites stay safe.
+function renderRightTextProps() {
   const rpTextProps = document.getElementById('rpTextProps');
-  const rpTextBody = document.getElementById('rpTextBody');
-  const rpTextTitle = document.getElementById('rpTextTitle');
-  if (!rpTextProps || !rpTextBody) return;
-
-  if (!l || !(l.mode === 'curved' || l.mode === 'straight')) {
-    rpTextProps.style.display = 'none';
-    rpTextBody.innerHTML = '';
-    return;
-  }
-
-  rpTextProps.style.display = '';
-  rpTextTitle.textContent = l.name || 'Text';
-  rpTextBody.innerHTML = buildTextContextHTML(l);
-  bindTextContextInputs(rpTextBody, l);
-  initNumberInputs(rpTextBody);
+  if (rpTextProps) rpTextProps.style.display = 'none';
 }
 
 /* ── Ring Controls (right panel) ── */
@@ -2134,7 +2159,11 @@ function bindTextContextInputs(ctx, l) {
       } else if (key === 'dir') {
         l.dir = v;
       } else if (key === 'text') {
-        l.text = v; l.name = v;
+        l.text = v;
+        if (l._autoName) l.name = autoLayerName(l);
+        buildLayerList();
+        const head = document.querySelector('#lsContext .ls-editor-name');
+        if (head && document.activeElement !== head) head.textContent = l.name;
       } else if (key === 'flip') {
         l.flip = input.checked;
       } else {
@@ -2238,12 +2267,17 @@ const ICO_EYE_OFF = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none"
 const ICO_DUP     = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="11" height="11" rx="2"/><rect x="4" y="4" width="11" height="11" rx="2"/></svg>`;
 const ICO_DEL     = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>`;
 
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+    ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
 function buildLayerList() {
   const list = document.getElementById('layerList');
   list.innerHTML = cfg.layers.map(l =>
     `<div class="layer-item${selectedIds.has(l.id) ? ' active' : ''}" data-id="${l.id}">
       <span class="layer-vis" data-act="vis" title="Show/hide">${l.visible ? ICO_EYE_ON : ICO_EYE_OFF}</span>
-      <span class="layer-name">${l.name || l.text || 'Layer'}</span>
+      <span class="layer-name" title="Double-click to rename">${escapeHtml(l.name || autoLayerName(l))}</span>
       <span class="layer-tag">${l.type === 'shape' ? (l.shapeType || 'SHAPE').toUpperCase().slice(0,4) : l.type === 'image' ? 'IMG' : l.mode === 'curved' ? 'ARC' : 'LINE'}</span>
       <span class="layer-icon-btn" data-act="dup" title="Duplicate">${ICO_DUP}</span>
       <span class="layer-icon-btn" data-act="del" title="Delete">${ICO_DEL}</span>
@@ -2314,7 +2348,37 @@ function buildLayerList() {
       }
       buildLayerList();
       buildLayerProps();
+      // Make it obvious the editor updated.
+      const ls = document.getElementById('leftSidebar');
+      if (ls) { ls.scrollTop = 0; ls.classList.remove('flash'); void ls.offsetWidth; ls.classList.add('flash'); }
     });
+
+    // Double-click the name to rename in place.
+    const nameEl = item.querySelector('.layer-name');
+    if (nameEl) {
+      nameEl.addEventListener('dblclick', e => {
+        e.stopPropagation();
+        nameEl.contentEditable = 'true';
+        nameEl.focus();
+        document.execCommand('selectAll', false, null);
+      });
+      const commit = () => {
+        nameEl.contentEditable = 'false';
+        const l = cfg.layers.find(x => x.id === id);
+        if (!l) return;
+        const v = (nameEl.textContent || '').trim();
+        if (v) { l.name = v; l._autoName = false; }
+        else   { l.name = autoLayerName(l); l._autoName = true; }
+        buildLayerList();
+        renderLeftSidebar();
+      };
+      nameEl.addEventListener('blur', commit);
+      nameEl.addEventListener('keydown', e => {
+        if (e.key === 'Enter')  { e.preventDefault(); nameEl.blur(); }
+        if (e.key === 'Escape') { nameEl.textContent = cfg.layers.find(x => x.id === id)?.name || ''; nameEl.blur(); }
+        e.stopPropagation();
+      });
+    }
   });
 }
 

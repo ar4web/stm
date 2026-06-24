@@ -210,17 +210,8 @@
         </div>
       </div>
 
-      <!-- Text Properties (contextual) -->
-      <div class="rp-section rp-open" data-rp="textProps" id="rpTextProps" style="display:none">
-        <button class="rp-header">
-          <span class="rp-title">
-            <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4V3h8v1M7 3v9M5 12h4"/></svg>
-            <span id="rpTextTitle">Text</span>
-          </span>
-          <svg class="rp-chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
-        </button>
-        <div class="rp-body" id="rpTextBody"></div>
-      </div>
+      <!-- Text Properties moved into the left sidebar editor (single source of truth). -->
+      <div id="rpTextProps" style="display:none"><div id="rpTextBody"></div></div>
 
       <!-- Rings -->
       <div class="rp-section rp-open" data-rp="rings">
@@ -407,33 +398,29 @@
 (function(){
   const rail = document.querySelector('.toolrail');
   if (!rail) return;
-  const groups = ['layers','shapes','add','rings','style','effects','export'];
 
   function showPanel(name){
-    // tool rail active state
     rail.querySelectorAll('.tool').forEach(t => {
       t.dataset.active = (t.dataset.toolPanel === name) ? 'true' : 'false';
     });
 
-    // Show/hide left sidebar groups
+    // Left sidebar stays visible. Show the Add/Shapes quick zones only when
+    // those tools are picked; the live editor (#lsContext) is always shown.
     const leftGroups = document.querySelectorAll('[data-panel-group]');
-    let leftHasContent = false;
     leftGroups.forEach(g => {
-      const match = (g.dataset.panelGroup === name) ||
-                    (name === 'layers' && g.dataset.panelGroup === 'layers');
-      g.style.display = match ? '' : 'none';
-      if (match) leftHasContent = true;
+      const grp = g.dataset.panelGroup;
+      if (grp === 'layers') { g.style.display = ''; return; }
+      g.style.display = (grp === name) ? '' : 'none';
     });
+
+    // Make sure the left sidebar itself is visible (never auto-collapse).
     const ls = document.getElementById('leftSidebar');
     const sr = document.getElementById('sidebarResize');
-    if (ls && sr) {
-      const collapse = !leftHasContent;
-      ls.style.display = collapse ? 'none' : '';
-      sr.style.display = collapse ? 'none' : '';
-    }
+    if (ls) ls.style.display = '';
+    if (sr) sr.style.display = '';
 
-    // Scroll the right panel to the section matching this tool
-    const rpMap = { layers:'layers', rings:'rings', style:'style', effects:'style', export:'export' };
+    // Jump the right panel to the relevant global section.
+    const rpMap = { rings:'rings', style:'style', effects:'style', export:'export', layers:'layers' };
     const rpKey = rpMap[name];
     if (rpKey) {
       const sec = document.querySelector(`.rp-section[data-rp="${rpKey}"]`);
@@ -450,7 +437,6 @@
     showPanel(btn.dataset.toolPanel);
   });
 
-  // Keyboard shortcuts: L S A R C E X
   document.addEventListener('keydown', e => {
     if (e.target.matches('input,textarea,select,[contenteditable]')) return;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -459,7 +445,6 @@
     if (tool) { e.preventDefault(); showPanel(tool); }
   });
 
-  // Default: show Layers panel
   showPanel('layers');
 })();
 </script>
