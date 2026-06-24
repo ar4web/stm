@@ -2267,12 +2267,17 @@ const ICO_EYE_OFF = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none"
 const ICO_DUP     = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="11" height="11" rx="2"/><rect x="4" y="4" width="11" height="11" rx="2"/></svg>`;
 const ICO_DEL     = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>`;
 
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+    ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
 function buildLayerList() {
   const list = document.getElementById('layerList');
   list.innerHTML = cfg.layers.map(l =>
     `<div class="layer-item${selectedIds.has(l.id) ? ' active' : ''}" data-id="${l.id}">
       <span class="layer-vis" data-act="vis" title="Show/hide">${l.visible ? ICO_EYE_ON : ICO_EYE_OFF}</span>
-      <span class="layer-name">${l.name || l.text || 'Layer'}</span>
+      <span class="layer-name" title="Double-click to rename">${escapeHtml(l.name || autoLayerName(l))}</span>
       <span class="layer-tag">${l.type === 'shape' ? (l.shapeType || 'SHAPE').toUpperCase().slice(0,4) : l.type === 'image' ? 'IMG' : l.mode === 'curved' ? 'ARC' : 'LINE'}</span>
       <span class="layer-icon-btn" data-act="dup" title="Duplicate">${ICO_DUP}</span>
       <span class="layer-icon-btn" data-act="del" title="Delete">${ICO_DEL}</span>
