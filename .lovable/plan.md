@@ -1,73 +1,59 @@
-## Root cause
+# Why the current UI feels broken
 
-All three symptoms come from **one bug** in `app.js`: the formula that computes the ellipse the text rides on. Everything else (selection handles, marquee, slider feel) is downstream of it.
+Three problems, one shared root cause.
 
-### The broken formula
+1. **Left sidebar feels empty / useless.** In `renderLeftSidebar()` (app.js:1786), when the selected layer is text (curved or straight) the left panel's `lsContext` is cleared and all controls are pushed into the *right* panel's "Text Properties" section. Text layers are the most common selection, so the left sidebar is blank most of the time. Only shape/image layers populate it.
 
-`drawCurvedLayer` at lines 506–514:
+2. **Selecting a layer doesn't open the editor.** Clicking a layer row in the right-side Layers list (app.js:2253) only sets `selId` and calls `buildLayerProps()`. Because the editor lives in the *same* right panel (further down, often scrolled off-screen) and the left sidebar is hidden for text layers, nothing visibly happens. The user clicks a layer and sees no change → "not possible to edit".
 
-```js
-if (cfg.shape === 'oval') {
-  const inset = rx - layer.radiusMm;          // horizontal inset only
-  textRx = mmPx(layer.radiusMm);              // X radius = slider value
-  textRy = mmPx(Math.max(2, ry - inset));     // Y radius = ry − (rx − radiusMm)
-}
-```
+3. **Layer names changed.** `buildLayerList` renders `l.name || l.text || 'Layer'` (app.js:2246). When a layer is created from a template or via "Add Layer", `name` is often empty, so the row shows the raw text content (or the literal word "Layer" when text is empty). Names also don't update when the user edits the text.
 
-For a circle this collapses correctly (`rx === ry`). For an **oval** it produces an ellipse that has nothing to do with the actual ring:
+# Fix plan (UI-only, no canvas/geometry changes)
 
-- Picture a 62×36 mm oval with `radiusMm = 28`. The text rides on an ellipse with Rx = 28 mm but Ry = 18 − (31 − 28) = 15 mm — a much flatter ellipse than the ring (which is roughly 30×17 mm inset by ring thickness). So Arabic text on the bottom of the oval drifts off the ring, "swims", and looks centered on a different curve than the user can see.
-- The same wrong `lRx / lRy` is used in three more places, so selection handles, the marquee outline, and the "eye" preview all sit on the wrong ellipse too:
-  - lines 833–844 (`mlRx / mlRy` marquee in `render`)
-  - lines 877–890 (handles + `lRxPx / lRyPx`)
-  - lines 922–935 (eye-layer outline)
-- The `radiusMm` slider feeds straight into that formula, so dragging it moves the text along a curve that does not match the ring — the user perceives it as "the slider doesn't work" / "the mouse selector is off".
+## 1. Make the left sidebar the single contextual editor (Canva-style)
 
-The handles drawn at `cx + cos(θ)·lRxPx, cy + sin(θ)·lRyPx` therefore land off the visible text path, so click hit-tests miss and dragging feels random. Fix the geometry once and selection + slider feel correct automatically.
+Route **all** layer editing to `lsContext`, for every layer type.
 
-## The fix (3 small, surgical changes — no redesign)
+- In `renderLeftSidebar()` (app.js:1780-1814):
+  - For text layers: render `buildTextContextHTML(l)` into `lsContext` (instead of the right panel) and bind with `bindTextContextInputs`.
+  - For shape / image layers: keep current behavior.
+  - For no selection: render the stamp props (`buildStampContextHTML`) into `lsContext` as a "Stamp" editor — so the panel is never blank.
+- Always keep the left sidebar visible. Delete the auto-collapse branch in the tool-rail script (index.html:430-433).
+- Replace the static `data-panel-group` blocks with a single live container. The tool rail (`L S A R C E X`) becomes a quick-jump that scrolls `lsContext` to the matching section header (Layers list, Add, Shapes, Rings, Style, Export) — all rendered inside the left sidebar.
 
-### 1. Single source of truth: `textEllipseFor(layer)` helper
+## 2. Right panel becomes a thin Layers + global rail (optional minimisation)
 
-Add one helper near the drawing section that returns `{ rx, ry }` in **mm** for any layer, used by every consumer:
+- Right panel keeps only: **Layers list**, **Stamp size/shape**, **Rings**, **Color & Effects**, **Export**. These are global/structural — not per-layer text editing.
+- Delete the right-side "Text Properties" section (index.html:214-223) and `renderRightTextProps()` (app.js:1824-1841) entirely. One editor location, no duplication.
 
-```text
-inset_mm = outer_thickness + ring_gap + (radiusOffset || 0)  // mm from outer edge
-rx_text  = stamp_rx_mm - inset_mm
-ry_text  = stamp_ry_mm - inset_mm          // for circle these are equal
-```
+## 3. Clicking a layer row opens its editor and scrolls into view
 
-This makes the text ellipse share the same eccentricity as the ring, so on an oval the text traces the ring's actual curve. For a circle behavior is identical to today.
+In `buildLayerList()` click handler (app.js:2253-2317):
+- After `buildLayerProps()`, scroll the left sidebar to top and flash a 1-frame highlight on the editor header so the user sees the panel update.
+- Double-click on `.layer-name` enters rename mode (contenteditable span); Enter / blur commits to `l.name`, re-renders the list.
 
-### 2. Reinterpret the `radiusMm` slider as an inset (backward compatible)
+## 4. Restore meaningful, stable layer names
 
-Keep the field name in `cfg` so saved presets still load, but treat it as **inset from outer edge** when the shape is oval/circle. Migration: on load, if `layer.radiusMm` looks like an absolute radius (≥ small threshold), convert once to inset = `stamp_rx − radiusMm`. The slider range/label in the panel (around line 2016) becomes "Distance from edge (mm)" with `min 0`, `max ~stamp_rx/2`.
+- In `makeLayer` (wherever layers are constructed), set a default `name` when missing:
+  - text layers → `'Top Arc'` / `'Bottom Arc'` / `'Line 1'` etc., based on position; fall back to first 18 chars of `text`.
+  - shape layers → `'Star'`, `'Hexagon'`, … from `shapeType`.
+  - image layers → `'Logo'` or imported filename.
+- In the text-content input's `input` handler inside `bindTextContextInputs`: if the layer's `name` is still the auto-generated default (track with `l._autoName = true`), update `name` to follow the text live; once the user renames manually, set `_autoName = false`.
+- Update `buildLayerList()` row template to show `l.name` only (never fall back to raw `l.text`), with the type tag (`ARC` / `LINE` / `STAR` / `IMG`) for clarity.
 
-Result: one slider correctly drives both axes of the ellipse; no extra control needed; oval and circle both behave naturally.
+## 5. Keep the curved-text / ring fix from the earlier plan intact
 
-### 3. Route all four call sites through the helper
+No changes to `drawCurvedLayer`, `textEllipseFor`, slider semantics, or hit-testing. This is a pure UI re-wire.
 
-Replace the duplicated oval/circle blocks with `const { rx, ry } = textEllipseFor(layer)` and use those:
+# Files touched
 
-- `drawCurvedLayer` (506–514, 522–525): text positions + tangent now use matching `textRx / textRy`.
-- `render()` marquee block (833–844): marquee ellipse traces the same path → selection box hugs the text.
-- `render()` handles block (877–895): start/end/radius handles sit **on** the text → clicking and dragging them works.
-- Eye-preview block (922–935): preview matches main render.
+- `public/stamp/index.html` — remove right-side Text Properties section; simplify left sidebar to a single live `#lsContext`; tweak tool-rail script to scroll instead of collapse.
+- `public/stamp/app.js` — rewrite `renderLeftSidebar()` to host every editor; delete `renderRightTextProps()`; add layer-row scroll-into-view + rename; add auto-name logic in `makeLayer` and text input handler; update layer-list row template.
+- `public/stamp/style.css` — minor: ensure left sidebar always shows; style the rename input and editor section headers.
 
-The tangent math at line 525 already handles non-equal Rx/Ry correctly; no change needed there.
+# What the user will see
 
-## What this fixes for the user
-
-- Curved text rides the **actual** ring on oval stamps (and stays correct on circles).
-- The `radiusMm` slider produces the motion the user expects (text moves in/out from the ring edge along both axes).
-- Mouse selection + drag handles land on the visible text, so picking and adjusting a curved layer works.
-- The selection marquee around a curved layer matches the text path.
-
-## Out of scope (per "fix only the 3 bugs")
-
-No redesign of the customization panels, no new layer types, no styling changes — only the geometry helper, slider semantics, and the four call-site swaps.
-
-## Files touched
-
-- `app.js` — add `textEllipseFor`, swap four call sites, one-time migration of `layer.radiusMm` on load.
-- `index.html` / `style.css` — untouched.
+- Click any layer → left sidebar instantly shows that layer's full editor (text, font, size, alignment, curve, color), focused at the top.
+- Double-click a layer name to rename it; names stay readable and update as you type.
+- Nothing selected → left sidebar shows the Stamp editor (size, shape, presets) instead of going blank.
+- Right panel stays compact: Layers list + global Rings / Color / Export.
