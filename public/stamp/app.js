@@ -1977,15 +1977,34 @@ function updateRingControls() {
 }
 
 function buildStampContextHTML() {
-  const isCircle = cfg.shape === 'standardCircle' || cfg.shape === 'doubleRing' || cfg.shape === 'tripleRing' || cfg.shape === 'minimalCircle';
-  const isRect = cfg.shape === 'rectangle' || cfg.shape === 'square';
-  const isOval = cfg.shape === 'oval';
-  const sizeLabel = isCircle ? 'Diameter' : 'Width';
-  const sizeVal = isCircle ? cfg.outerDiameter : cfg.width;
-  const sizeMax = isCircle ? 90 : 120;
+  // Fix: cfg.shape uses 'circle','oval','rectangle' values; use template name too.
+  const isCircle = cfg.shape === 'circle';
+  const isRect   = cfg.shape === 'rectangle';
+  const isOval   = cfg.shape === 'oval';
+  const sizeLabel = (isCircle || isOval) ? 'Diameter' : 'Width';
+  const sizeVal   = (isCircle || isOval) ? cfg.outerDiameter || cfg.width : cfg.width;
+  const sizeMax   = 120;
   const thickAvg = ((cfg.outerRingThickness || 0) + (cfg.innerRingThickness || 0) + (cfg.innerRing2Thickness || 0)) / (cfg.rings >= 3 ? 3 : cfg.rings >= 2 ? 2 : 1);
 
+  // Quick template chips (keeps shape selection always visible and one-click)
+  const chips = Object.keys(TEMPLATES).map(k => {
+    const t = TEMPLATES[k];
+    const active = cfg.template === k ? ' active' : '';
+    return `<button class="ls-tpl-chip${active}" data-tpl="${k}" title="${t.label}">${t.label}</button>`;
+  }).join('');
+
+  const rc = cfg.ringColors || {};
+  const swatch = (key, label) => `
+    <div class="ls-ring-color">
+      <label class="ls-row-label">${label}</label>
+      <input type="color" class="ls-color-input" data-ls-ring="${key}" value="${rc[key] || cfg.inkColor}">
+      <button class="ls-clear-color" data-ls-ring-clear="${key}" title="Use ink color">×</button>
+    </div>`;
+
   return `
+    <div class="ls-sub-title">Quick stamp shape</div>
+    <div class="ls-tpl-chips">${chips}</div>
+
     <div class="ls-sub-title">Stamp</div>
     <div class="ls-row"><label class="ls-row-label">${sizeLabel}</label>
       <div class="slider-row"><input type="range" min="10" max="${sizeMax}" step="0.5" data-ls="size" value="${sizeVal}"><input type="number" min="10" max="${sizeMax}" step="0.5" data-ls="size" value="${sizeVal}"></div>
@@ -2008,6 +2027,12 @@ function buildStampContextHTML() {
         <input type="number" min="-30" max="30" step="0.5" data-ls="offsetY" value="${cfg.shapeOffsetYmm||0}" placeholder="Y">
       </div>
     </div>
+
+    <div class="ls-sub-title">Ring colors</div>
+    ${swatch('outer','Outer')}
+    ${cfg.rings >= 2 ? swatch('inner','Middle') : ''}
+    ${cfg.rings >= 3 ? swatch('inner2','Inner') : ''}
+    ${cfg.centerAreaDiameter > 0 ? swatch('center','Center') : ''}
   `;
 }
 
