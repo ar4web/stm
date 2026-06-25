@@ -2080,6 +2080,14 @@ function buildTextContextHTML(l) {
       <div class="slider-row"><input type="range" min="0.3" max="3" step="0.05" data-ls="scaleY" value="${l.scaleY}"><input type="number" min="0.3" max="3" step="0.05" data-ls="scaleY" value="${l.scaleY}"></div>
     </div>
     ${l.mode === 'curved' ? `
+    <div class="ls-row">
+      <label class="ls-row-label">Snap to ring</label>
+      <div class="ls-snap-row">
+        <button class="ls-mini-btn" data-snap="outer">Outer channel</button>
+        ${cfg.rings >= 3 ? `<button class="ls-mini-btn" data-snap="inner">Inner channel</button>` : ''}
+        <button class="ls-mini-btn" data-snap="center">Near center</button>
+      </div>
+    </div>
     <div class="ls-row"><label class="ls-row-label">Radius</label>
       <div class="slider-row"><input type="range" min="3" max="42" step="0.1" data-ls="radiusMm" value="${l.radiusMm}"><input type="number" min="3" max="42" step="0.1" data-ls="radiusMm" value="${l.radiusMm}"></div>
     </div>
@@ -2103,6 +2111,11 @@ function buildTextContextHTML(l) {
         <input type="number" min="-50" max="50" step="0.1" data-ls="posXmm" value="${l.posXmm||0}" placeholder="X">
         <input type="number" min="-50" max="50" step="0.1" data-ls="posYmm" value="${l.posYmm||0}" placeholder="Y">
       </div>
+    </div>
+    <div class="ls-sub-title">Color</div>
+    <div class="ls-color-row">
+      <input type="color" class="ls-color-input" data-ls-color value="${l.color || cfg.inkColor}">
+      <button class="ls-clear-color" data-ls-color-clear title="Use stamp ink color">Use ink</button>
     </div>
   `;
 }
