@@ -188,6 +188,7 @@ function makeLayer(o = {}) {
     radiusMm: 16, startAngle: 200, endAngle: 340,
     offsetXmm: 0, offsetYmm: 0,
     visible: true,
+    color: null,        // per-layer override; null = inherit cfg.inkColor
     type: 'text',
     shapeType: 'star', shapeSizeMm: 10, shapeRotation: 0, shapeFill: true, shapePoints: 5,
     imageData: null, imageWidthMm: 10, imageHeightMm: 10,
@@ -201,6 +202,30 @@ function makeLayer(o = {}) {
     base._autoName = false;
   }
   return base;
+}
+
+/* Snap a curved layer's radius to the channel between two rings (the "wall"
+   the user wants the text to ride). Returns radius in mm. */
+function ringChannelRadiusMm(channel = 'outer') {
+  const sz = stampSize();
+  const r = Math.min(sz.w, sz.h) / 2;
+  const ot = cfg.outerRingThickness || 0;
+  const it = cfg.innerRingThickness || 0;
+  const it2 = cfg.innerRing2Thickness || 0;
+  const gap = cfg.ringGap || 0;
+  if (channel === 'outer') {
+    // Channel between outer ring inner-edge and middle ring outer-edge.
+    return Math.max(2, r - ot - gap / 2);
+  }
+  if (channel === 'inner') {
+    return Math.max(2, r - ot - gap - it - gap / 2);
+  }
+  if (channel === 'center') {
+    const c = (cfg.centerAreaDiameter || 0) / 2;
+    const innerEdge = r - ot - gap - it - (cfg.rings >= 3 ? gap + it2 : 0);
+    return Math.max(2, (innerEdge + c) / 2);
+  }
+  return r - ot - gap / 2;
 }
 
 function defaultLayers() {
