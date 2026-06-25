@@ -188,6 +188,7 @@ function makeLayer(o = {}) {
     radiusMm: 16, startAngle: 200, endAngle: 340,
     offsetXmm: 0, offsetYmm: 0,
     visible: true,
+    color: null,        // per-layer override; null = inherit cfg.inkColor
     type: 'text',
     shapeType: 'star', shapeSizeMm: 10, shapeRotation: 0, shapeFill: true, shapePoints: 5,
     imageData: null, imageWidthMm: 10, imageHeightMm: 10,
@@ -203,6 +204,30 @@ function makeLayer(o = {}) {
   return base;
 }
 
+/* Snap a curved layer's radius to the channel between two rings (the "wall"
+   the user wants the text to ride). Returns radius in mm. */
+function ringChannelRadiusMm(channel = 'outer') {
+  const sz = stampSize();
+  const r = Math.min(sz.w, sz.h) / 2;
+  const ot = cfg.outerRingThickness || 0;
+  const it = cfg.innerRingThickness || 0;
+  const it2 = cfg.innerRing2Thickness || 0;
+  const gap = cfg.ringGap || 0;
+  if (channel === 'outer') {
+    // Channel between outer ring inner-edge and middle ring outer-edge.
+    return Math.max(2, r - ot - gap / 2);
+  }
+  if (channel === 'inner') {
+    return Math.max(2, r - ot - gap - it - gap / 2);
+  }
+  if (channel === 'center') {
+    const c = (cfg.centerAreaDiameter || 0) / 2;
+    const innerEdge = r - ot - gap - it - (cfg.rings >= 3 ? gap + it2 : 0);
+    return Math.max(2, (innerEdge + c) / 2);
+  }
+  return r - ot - gap / 2;
+}
+
 function defaultLayers() {
   return [
     makeLayer({ name:'Shape', text:'شركة بصمة الموارد المحدودة', font:'Cairo',      dir:'rtl', weight:800, sizeMm:4.5, mode:'curved', flip:false, radiusMm:16,   startAngle:200, endAngle:340 }),
@@ -214,6 +239,7 @@ function defaultLayers() {
 function baseStyle() {
   return {
     inkColor:'#1e3a8a', opacity:100,
+    ringColors: { outer:null, inner:null, inner2:null, center:null }, // null = inherit inkColor
     inkBleed:true,  inkBleedAmount:0.5,
     grungeTexture:true,  grungeAmount:0.3,
     rotationJitter:true, jitterDegrees:0.9,
@@ -408,39 +434,43 @@ function rectStroke(cx, cy, wPx, hPx, insetMm, thickMm, color) {
 function drawGeometry(cx, cy, wPx, hPx, color) {
   const rx = wPx / 2, ry = hPx / 2;
   const insetPx = mmPx(cfg.outerRingThickness + cfg.ringGap);
+  const rc = cfg.ringColors || {};
+  const op = cfg.opacity;
+  const cOuter  = rc.outer  ? hexRgba(rc.outer,  op) : color;
+  const cInner  = rc.inner  ? hexRgba(rc.inner,  op) : color;
+  const cInner2 = rc.inner2 ? hexRgba(rc.inner2, op) : color;
+  const cCenter = rc.center ? hexRgba(rc.center, op) : color;
 
   if (cfg.shape === 'rectangle') {
-    // Outer ring
-    rectStroke(cx, cy, wPx, hPx, 0, cfg.outerRingThickness, color);
-    // Inner rings
+    rectStroke(cx, cy, wPx, hPx, 0, cfg.outerRingThickness, cOuter);
     if (cfg.rings >= 2 && cfg.innerRingThickness > 0) {
       rectStroke(cx, cy, wPx, hPx,
         cfg.outerRingThickness + cfg.ringGap,
-        cfg.innerRingThickness, color);
+        cfg.innerRingThickness, cInner);
     }
     if (cfg.rings >= 3 && cfg.innerRing2Thickness > 0) {
       const inset2 = cfg.outerRingThickness + cfg.ringGap
                    + cfg.innerRingThickness + cfg.ringGap;
-      rectStroke(cx, cy, wPx, hPx, inset2, cfg.innerRing2Thickness, color);
+      rectStroke(cx, cy, wPx, hPx, inset2, cfg.innerRing2Thickness, cInner2);
     }
     return;
   }
 
   // Ellipse / oval / circle
-  ellipseStroke(cx, cy, rx, ry, cfg.outerRingThickness, color);
+  ellipseStroke(cx, cy, rx, ry, cfg.outerRingThickness, cOuter);
 
   if (cfg.rings >= 2 && cfg.innerRingThickness > 0) {
-    ellipseStroke(cx, cy, rx - insetPx, ry - insetPx, cfg.innerRingThickness, color);
+    ellipseStroke(cx, cy, rx - insetPx, ry - insetPx, cfg.innerRingThickness, cInner);
   }
   if (cfg.rings >= 3 && cfg.innerRing2Thickness > 0) {
     const inset2 = mmPx(cfg.outerRingThickness + cfg.ringGap) +
                    mmPx(cfg.innerRingThickness  + cfg.ringGap);
-    ellipseStroke(cx, cy, rx - inset2, ry - inset2, cfg.innerRing2Thickness, color);
+    ellipseStroke(cx, cy, rx - inset2, ry - inset2, cfg.innerRing2Thickness, cInner2);
   }
   if (cfg.centerAreaDiameter > 0) {
     const cr = mmPx(cfg.centerAreaDiameter / 2);
     const sy = cfg.shape === 'oval' ? clamp(ry / rx, 0.1, 1) : 1;
-    ellipseStroke(cx, cy, cr, cr * sy, Math.max(0.4, cfg.innerRingThickness || 0.8), color);
+    ellipseStroke(cx, cy, cr, cr * sy, Math.max(0.4, cfg.innerRingThickness || 0.8), cCenter);
   }
 }
 
@@ -1015,10 +1045,11 @@ function render() {
 
   cfg.layers.forEach(layer => {
     if (!layer.visible) return;
-    if (layer.type === 'shape')       drawShapeLayer(layer, cx, cy, color, rng);
+    const lcolor = layer.color ? hexRgba(layer.color, cfg.opacity) : color;
+    if (layer.type === 'shape')       drawShapeLayer(layer, cx, cy, lcolor, rng);
     else if (layer.type === 'image')  drawImageLayer(layer, cx, cy);
-    else if (layer.mode === 'curved') drawCurvedLayer(layer, cx, cy, color, rng);
-    else                              drawStraightLayer(layer, cx, cy, color, rng);
+    else if (layer.mode === 'curved') drawCurvedLayer(layer, cx, cy, lcolor, rng);
+    else                              drawStraightLayer(layer, cx, cy, lcolor, rng);
   });
 
   applyGrunge(rng, cfg.grungeAmount);
@@ -1845,6 +1876,14 @@ function renderLeftSidebar() {
     });
   }
 
+  // Right panel: only show contextual sections when a layer is selected.
+  document.querySelectorAll('.right-panel .rp-section').forEach(sec => {
+    const which = sec.dataset.rp;
+    // Always keep Layers list. Other sections (rings/stamp/style/export/guides)
+    // remain useful as global controls — keep them visible too, but dim if no selection.
+    if (which === 'layers') sec.style.display = '';
+    else sec.style.display = l ? '' : '';  // global panels always visible
+  });
   // Always render right-panel stamp section too (kept as a global structural panel).
   renderRightStampProps();
   updateRingControls();
@@ -1946,15 +1985,34 @@ function updateRingControls() {
 }
 
 function buildStampContextHTML() {
-  const isCircle = cfg.shape === 'standardCircle' || cfg.shape === 'doubleRing' || cfg.shape === 'tripleRing' || cfg.shape === 'minimalCircle';
-  const isRect = cfg.shape === 'rectangle' || cfg.shape === 'square';
-  const isOval = cfg.shape === 'oval';
-  const sizeLabel = isCircle ? 'Diameter' : 'Width';
-  const sizeVal = isCircle ? cfg.outerDiameter : cfg.width;
-  const sizeMax = isCircle ? 90 : 120;
+  // Fix: cfg.shape uses 'circle','oval','rectangle' values; use template name too.
+  const isCircle = cfg.shape === 'circle';
+  const isRect   = cfg.shape === 'rectangle';
+  const isOval   = cfg.shape === 'oval';
+  const sizeLabel = (isCircle || isOval) ? 'Diameter' : 'Width';
+  const sizeVal   = (isCircle || isOval) ? cfg.outerDiameter || cfg.width : cfg.width;
+  const sizeMax   = 120;
   const thickAvg = ((cfg.outerRingThickness || 0) + (cfg.innerRingThickness || 0) + (cfg.innerRing2Thickness || 0)) / (cfg.rings >= 3 ? 3 : cfg.rings >= 2 ? 2 : 1);
 
+  // Quick template chips (keeps shape selection always visible and one-click)
+  const chips = Object.keys(TEMPLATES).map(k => {
+    const t = TEMPLATES[k];
+    const active = cfg.template === k ? ' active' : '';
+    return `<button class="ls-tpl-chip${active}" data-tpl="${k}" title="${t.label}">${t.label}</button>`;
+  }).join('');
+
+  const rc = cfg.ringColors || {};
+  const swatch = (key, label) => `
+    <div class="ls-ring-color">
+      <label class="ls-row-label">${label}</label>
+      <input type="color" class="ls-color-input" data-ls-ring="${key}" value="${rc[key] || cfg.inkColor}">
+      <button class="ls-clear-color" data-ls-ring-clear="${key}" title="Use ink color">×</button>
+    </div>`;
+
   return `
+    <div class="ls-sub-title">Quick stamp shape</div>
+    <div class="ls-tpl-chips">${chips}</div>
+
     <div class="ls-sub-title">Stamp</div>
     <div class="ls-row"><label class="ls-row-label">${sizeLabel}</label>
       <div class="slider-row"><input type="range" min="10" max="${sizeMax}" step="0.5" data-ls="size" value="${sizeVal}"><input type="number" min="10" max="${sizeMax}" step="0.5" data-ls="size" value="${sizeVal}"></div>
@@ -1977,6 +2035,12 @@ function buildStampContextHTML() {
         <input type="number" min="-30" max="30" step="0.5" data-ls="offsetY" value="${cfg.shapeOffsetYmm||0}" placeholder="Y">
       </div>
     </div>
+
+    <div class="ls-sub-title">Ring colors</div>
+    ${swatch('outer','Outer')}
+    ${cfg.rings >= 2 ? swatch('inner','Middle') : ''}
+    ${cfg.rings >= 3 ? swatch('inner2','Inner') : ''}
+    ${cfg.centerAreaDiameter > 0 ? swatch('center','Center') : ''}
   `;
 }
 
@@ -2024,6 +2088,14 @@ function buildTextContextHTML(l) {
       <div class="slider-row"><input type="range" min="0.3" max="3" step="0.05" data-ls="scaleY" value="${l.scaleY}"><input type="number" min="0.3" max="3" step="0.05" data-ls="scaleY" value="${l.scaleY}"></div>
     </div>
     ${l.mode === 'curved' ? `
+    <div class="ls-row">
+      <label class="ls-row-label">Snap to ring</label>
+      <div class="ls-snap-row">
+        <button class="ls-mini-btn" data-snap="outer">Outer channel</button>
+        ${cfg.rings >= 3 ? `<button class="ls-mini-btn" data-snap="inner">Inner channel</button>` : ''}
+        <button class="ls-mini-btn" data-snap="center">Near center</button>
+      </div>
+    </div>
     <div class="ls-row"><label class="ls-row-label">Radius</label>
       <div class="slider-row"><input type="range" min="3" max="42" step="0.1" data-ls="radiusMm" value="${l.radiusMm}"><input type="number" min="3" max="42" step="0.1" data-ls="radiusMm" value="${l.radiusMm}"></div>
     </div>
@@ -2047,6 +2119,11 @@ function buildTextContextHTML(l) {
         <input type="number" min="-50" max="50" step="0.1" data-ls="posXmm" value="${l.posXmm||0}" placeholder="X">
         <input type="number" min="-50" max="50" step="0.1" data-ls="posYmm" value="${l.posYmm||0}" placeholder="Y">
       </div>
+    </div>
+    <div class="ls-sub-title">Color</div>
+    <div class="ls-color-row">
+      <input type="color" class="ls-color-input" data-ls-color value="${l.color || cfg.inkColor}">
+      <button class="ls-clear-color" data-ls-color-clear title="Use stamp ink color">Use ink</button>
     </div>
   `;
 }
@@ -2073,6 +2150,11 @@ function buildShapeLayerContextHTML(l) {
       </div>
     </div>
     <label class="ls-toggle"><input type="checkbox" data-ls="shapeFill"${l.shapeFill ? ' checked' : ''}><span>Filled</span></label>
+    <div class="ls-sub-title">Color</div>
+    <div class="ls-color-row">
+      <input type="color" class="ls-color-input" data-ls-color value="${l.color || cfg.inkColor}">
+      <button class="ls-clear-color" data-ls-color-clear title="Use stamp ink color">Use ink</button>
+    </div>
   `;
 }
 
@@ -2109,6 +2191,29 @@ function buildAlignRowHTML() {
 const LS_NUMERIC = new Set(['size','height','thickness','ringGap','centerAreaDiameter','cornerRadius','offsetX','offsetY','sizeMm','letterSpacing','wordSpacing','scaleX','scaleY','radiusMm','startAngle','endAngle','offsetXmm','offsetYmm','posXmm','posYmm','shapeSizeMm','shapeRotation','imageWidthMm','imageHeightMm']);
 
 function bindStampContextInputs(ctx) {
+  // Quick template chips
+  ctx.querySelectorAll('[data-tpl]').forEach(btn => {
+    btn.addEventListener('click', () => applyShapeKeepLayers(btn.dataset.tpl));
+  });
+  // Ring color pickers
+  ctx.querySelectorAll('[data-ls-ring]').forEach(input => {
+    const k = input.dataset.lsRing;
+    input.addEventListener('input', () => {
+      cfg.ringColors = cfg.ringColors || {};
+      cfg.ringColors[k] = input.value;
+      renderD();
+    });
+    input.addEventListener('change', autoHist);
+  });
+  ctx.querySelectorAll('[data-ls-ring-clear]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const k = btn.dataset.lsRingClear;
+      if (cfg.ringColors) cfg.ringColors[k] = null;
+      renderLeftSidebar();
+      renderD();
+      autoHist();
+    });
+  });
   // All data-ls inputs
   ctx.querySelectorAll('[data-ls]').forEach(input => {
     const key = input.dataset.ls;
@@ -2118,8 +2223,8 @@ function bindStampContextInputs(ctx) {
       let v = input.type === 'checkbox' ? input.checked : input.value;
       if (LS_NUMERIC.has(key)) v = parseFloat(v) || 0;
       if (key === 'size') {
-        const isCircle = cfg.shape === 'standardCircle' || cfg.shape === 'doubleRing' || cfg.shape === 'tripleRing' || cfg.shape === 'minimalCircle';
-        if (isCircle) cfg.outerDiameter = v; else cfg.width = v;
+        if (cfg.shape === 'circle') cfg.outerDiameter = v;
+        else { cfg.width = v; cfg.outerDiameter = v; }
       } else if (key === 'thickness') {
         cfg.outerRingThickness = v;
         if (cfg.rings >= 2) cfg.innerRingThickness = Math.round(v * 0.5 * 10) / 10;
@@ -2138,6 +2243,27 @@ function bindStampContextInputs(ctx) {
   });
   // Align buttons
   bindAlignButtons(ctx);
+}
+
+/* Switch stamp template/geometry but keep current layers intact. */
+function applyShapeKeepLayers(name) {
+  if (!TEMPLATES[name]) return;
+  const t = TEMPLATES[name];
+  cfg.template = name;
+  cfg.shape = t.shape;
+  cfg.outerDiameter = t.outerDiameter;
+  cfg.width = t.width; cfg.height = t.height;
+  cfg.outerRingThickness = t.outerRingThickness;
+  cfg.innerRingThickness = t.innerRingThickness;
+  cfg.innerRing2Thickness = t.innerRing2Thickness || t.innerRingThickness * 0.8;
+  cfg.ringGap = t.ringGap;
+  cfg.centerAreaDiameter = t.centerAreaDiameter;
+  cfg.cornerRadius = t.cornerRadius;
+  cfg.rings = t.rings;
+  syncAll();
+  renderLeftSidebar();
+  render();
+  pushHistory();
 }
 
 function bindTextContextInputs(ctx, l) {
@@ -2177,6 +2303,7 @@ function bindTextContextInputs(ctx, l) {
       renderD();
     });
   });
+  bindLayerExtras(ctx, l);
 }
 
 function bindShapeLayerContextInputs(ctx, l) {
@@ -2193,6 +2320,37 @@ function bindShapeLayerContextInputs(ctx, l) {
       }
       autoHist();
       renderD();
+    });
+  });
+  bindLayerExtras(ctx, l);
+}
+
+/* Wire up the per-layer color picker + curved-text "Snap to ring" buttons.
+   Reused by text/shape/image contexts. */
+function bindLayerExtras(ctx, l) {
+  const color = ctx.querySelector('[data-ls-color]');
+  if (color) {
+    color.addEventListener('input', () => {
+      l.color = color.value;
+      renderD();
+    });
+    color.addEventListener('change', autoHist);
+  }
+  const clear = ctx.querySelector('[data-ls-color-clear]');
+  if (clear) {
+    clear.addEventListener('click', () => {
+      l.color = null;
+      renderLeftSidebar();
+      renderD();
+      autoHist();
+    });
+  }
+  ctx.querySelectorAll('[data-snap]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      l.radiusMm = +ringChannelRadiusMm(btn.dataset.snap).toFixed(1);
+      renderLeftSidebar();
+      renderD();
+      autoHist();
     });
   });
 }

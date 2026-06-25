@@ -1,59 +1,61 @@
-# Why the current UI feels broken
+## Scope
 
-Three problems, one shared root cause.
+Five changes to `public/stamp/index.html`, `public/stamp/app.js`, `public/stamp/style.css`. No backend/route changes.
 
-1. **Left sidebar feels empty / useless.** In `renderLeftSidebar()` (app.js:1786), when the selected layer is text (curved or straight) the left panel's `lsContext` is cleared and all controls are pushed into the *right* panel's "Text Properties" section. Text layers are the most common selection, so the left sidebar is blank most of the time. Only shape/image layers populate it.
+### 1. Restore the Quick Stamp Shape / Ring presets row
 
-2. **Selecting a layer doesn't open the editor.** Clicking a layer row in the right-side Layers list (app.js:2253) only sets `selId` and calls `buildLayerProps()`. Because the editor lives in the *same* right panel (further down, often scrolled off-screen) and the left sidebar is hidden for text layers, nothing visibly happens. The user clicks a layer and sees no change → "not possible to edit".
+Re-add the preset chip strip (Circle, Double Ring, Triple Ring, Oval, Rectangle, Square, Minimal, Saudi CO.) from `STAMP_TEMPLATES`. Place it as a compact horizontal scroller at the **top of the canvas area** (above the stamp) so it's always one click away, no matter what's selected. Clicking a chip applies that template's ring count / shape / dimensions without nuking existing text layers (preserve text, replace stamp geometry only).
 
-3. **Layer names changed.** `buildLayerList` renders `l.name || l.text || 'Layer'` (app.js:2246). When a layer is created from a template or via "Add Layer", `name` is often empty, so the row shows the raw text content (or the literal word "Layer" when text is empty). Names also don't update when the user edits the text.
+### 2. Text auto-snaps between outer + middle ring (curved layers)
 
-# Fix plan (UI-only, no canvas/geometry changes)
+For any **curved** text layer, its `radiusMm` is no longer a free slider. It is computed from the current stamp geometry so the baseline sits in the "channel" between the outer ring and the next inner ring:
 
-## 1. Make the left sidebar the single contextual editor (Canva-style)
+```
+channelOuter = outerDiameter/2 - outerRingThickness
+channelInner = channelOuter - ringGap
+baselineR    = (channelOuter + channelInner) / 2
+```
 
-Route **all** layer editing to `lsContext`, for every layer type.
+For triple-ring stamps, a second channel between inner ring 1 and inner ring 2 is offered via a small "Top channel / Bottom channel" toggle on the text layer. Straight (horizontal) text stays inside the center area as today. The `radiusMm` slider is hidden for curved layers (replaced by the channel toggle); existing layers get their `radiusMm` snapped on load.
 
-- In `renderLeftSidebar()` (app.js:1780-1814):
-  - For text layers: render `buildTextContextHTML(l)` into `lsContext` (instead of the right panel) and bind with `bindTextContextInputs`.
-  - For shape / image layers: keep current behavior.
-  - For no selection: render the stamp props (`buildStampContextHTML`) into `lsContext` as a "Stamp" editor — so the panel is never blank.
-- Always keep the left sidebar visible. Delete the auto-collapse branch in the tool-rail script (index.html:430-433).
-- Replace the static `data-panel-group` blocks with a single live container. The tool rail (`L S A R C E X`) becomes a quick-jump that scrolls `lsContext` to the matching section header (Layers list, Add, Shapes, Rings, Style, Export) — all rendered inside the left sidebar.
+Result: text always rides cleanly between two rings like a wall, no overlap.
 
-## 2. Right panel becomes a thin Layers + global rail (optional minimisation)
+### 3. Compact, contextual right panel
 
-- Right panel keeps only: **Layers list**, **Stamp size/shape**, **Rings**, **Color & Effects**, **Export**. These are global/structural — not per-layer text editing.
-- Delete the right-side "Text Properties" section (index.html:214-223) and `renderRightTextProps()` (app.js:1824-1841) entirely. One editor location, no duplication.
+Right panel is hidden by default. It only mounts when a layer is selected (`selId` non-null) **or** a ring is selected. When mounted, it shows ONLY editors relevant to that selection:
 
-## 3. Clicking a layer row opens its editor and scrolls into view
+- Text layer → text content, font, weight, size, letter spacing, alignment, channel toggle, color, flip.
+- Shape/symbol layer → shape picker, size, offset, color.
+- Image layer → replace image, size, offset, opacity.
+- Ring selected → that ring's thickness + color.
 
-In `buildLayerList()` click handler (app.js:2253-2317):
-- After `buildLayerProps()`, scroll the left sidebar to top and flash a 1-frame highlight on the editor header so the user sees the panel update.
-- Double-click on `.layer-name` enters rename mode (contenteditable span); Enter / blur commits to `l.name`, re-renders the list.
+Global stamp settings (shape, ring count, gaps, center area) move into a small **gear popover** on the top bar. Layers list collapses into a thin strip on the left rail. Controls themselves get tighter spacing (`--ctl-h: 28px`, `--gap: 6px`) and 2-column grids where it makes sense (size + spacing on one row, etc.).
 
-## 4. Restore meaningful, stable layer names
+### 4. Right panel edits only the selected layer
 
-- In `makeLayer` (wherever layers are constructed), set a default `name` when missing:
-  - text layers → `'Top Arc'` / `'Bottom Arc'` / `'Line 1'` etc., based on position; fall back to first 18 chars of `text`.
-  - shape layers → `'Star'`, `'Hexagon'`, … from `shapeType`.
-  - image layers → `'Logo'` or imported filename.
-- In the text-content input's `input` handler inside `bindTextContextInputs`: if the layer's `name` is still the auto-generated default (track with `l._autoName = true`), update `name` to follow the text live; once the user renames manually, set `_autoName = false`.
-- Update `buildLayerList()` row template to show `l.name` only (never fall back to raw `l.text`), with the type tag (`ARC` / `LINE` / `STAR` / `IMG`) for clarity.
+Audit every binding in `buildLayerProps()` / `bindTextContextInputs()`: each input writes to `selLayer()` resolved at event time (not cached at render). When selection changes, the panel re-renders from scratch so stale handlers cannot leak edits to the wrong layer. Multi-select edits are explicitly opt-in (already the case — left as-is).
 
-## 5. Keep the curved-text / ring fix from the earlier plan intact
+### 5. Color-coded selection highlight on the canvas
 
-No changes to `drawCurvedLayer`, `textEllipseFor`, slider semantics, or hit-testing. This is a pure UI re-wire.
+Each selectable element gets a stable highlight color so the user sees what they're editing:
 
-# Files touched
+- Outer ring selected → ring drawn with red overlay stroke.
+- Inner ring 1 → green overlay.
+- Inner ring 2 → blue overlay.
+- Selected curved text layer → text rendered in the standard color **plus** an orange dashed baseline arc and orange bbox.
+- Selected straight text → orange dashed bbox.
+- Selected shape/image layer → cyan dashed bbox.
 
-- `public/stamp/index.html` — remove right-side Text Properties section; simplify left sidebar to a single live `#lsContext`; tweak tool-rail script to scroll instead of collapse.
-- `public/stamp/app.js` — rewrite `renderLeftSidebar()` to host every editor; delete `renderRightTextProps()`; add layer-row scroll-into-view + rename; add auto-name logic in `makeLayer` and text input handler; update layer-list row template.
-- `public/stamp/style.css` — minor: ensure left sidebar always shows; style the rename input and editor section headers.
+Highlights are overlay-only (don't mutate the layer's actual color so export stays clean). Add a small legend chip near the selected element's label in the panel header so the color mapping is discoverable.
 
-# What the user will see
+## Files
 
-- Click any layer → left sidebar instantly shows that layer's full editor (text, font, size, alignment, curve, color), focused at the top.
-- Double-click a layer name to rename it; names stay readable and update as you type.
-- Nothing selected → left sidebar shows the Stamp editor (size, shape, presets) instead of going blank.
-- Right panel stays compact: Layers list + global Rings / Color / Export.
+- `public/stamp/index.html` — add preset strip container above canvas; remove always-mounted right panel markup; add gear popover for global stamp settings; tighten tool rail.
+- `public/stamp/app.js` — add `applyPreset(name)` that preserves layers; add `snapCurvedRadius(layer)` helper called on render and on selection; rewrite `buildLayerProps()` to mount/unmount based on selection and resolve `selLayer()` lazily inside handlers; add selection overlay drawing in the canvas render pass.
+- `public/stamp/style.css` — preset chip strip styles; compact control sizing tokens; hidden-by-default right panel slide-in; selection overlay colors.
+
+## Out of scope
+
+- No changes to export pipeline or PDF/PNG output.
+- No new fonts or assets.
+- Multi-select editing UX stays as-is.
