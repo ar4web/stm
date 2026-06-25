@@ -2142,6 +2142,11 @@ function buildShapeLayerContextHTML(l) {
       </div>
     </div>
     <label class="ls-toggle"><input type="checkbox" data-ls="shapeFill"${l.shapeFill ? ' checked' : ''}><span>Filled</span></label>
+    <div class="ls-sub-title">Color</div>
+    <div class="ls-color-row">
+      <input type="color" class="ls-color-input" data-ls-color value="${l.color || cfg.inkColor}">
+      <button class="ls-clear-color" data-ls-color-clear title="Use stamp ink color">Use ink</button>
+    </div>
   `;
 }
 
