@@ -1045,10 +1045,11 @@ function render() {
 
   cfg.layers.forEach(layer => {
     if (!layer.visible) return;
-    if (layer.type === 'shape')       drawShapeLayer(layer, cx, cy, color, rng);
+    const lcolor = layer.color ? hexRgba(layer.color, cfg.opacity) : color;
+    if (layer.type === 'shape')       drawShapeLayer(layer, cx, cy, lcolor, rng);
     else if (layer.type === 'image')  drawImageLayer(layer, cx, cy);
-    else if (layer.mode === 'curved') drawCurvedLayer(layer, cx, cy, color, rng);
-    else                              drawStraightLayer(layer, cx, cy, color, rng);
+    else if (layer.mode === 'curved') drawCurvedLayer(layer, cx, cy, lcolor, rng);
+    else                              drawStraightLayer(layer, cx, cy, lcolor, rng);
   });
 
   applyGrunge(rng, cfg.grungeAmount);
