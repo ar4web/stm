@@ -239,6 +239,7 @@ function defaultLayers() {
 function baseStyle() {
   return {
     inkColor:'#1e3a8a', opacity:100,
+    ringColors: { outer:null, inner:null, inner2:null, center:null }, // null = inherit inkColor
     inkBleed:true,  inkBleedAmount:0.5,
     grungeTexture:true,  grungeAmount:0.3,
     rotationJitter:true, jitterDegrees:0.9,
