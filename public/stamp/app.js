@@ -434,39 +434,43 @@ function rectStroke(cx, cy, wPx, hPx, insetMm, thickMm, color) {
 function drawGeometry(cx, cy, wPx, hPx, color) {
   const rx = wPx / 2, ry = hPx / 2;
   const insetPx = mmPx(cfg.outerRingThickness + cfg.ringGap);
+  const rc = cfg.ringColors || {};
+  const op = cfg.opacity;
+  const cOuter  = rc.outer  ? hexRgba(rc.outer,  op) : color;
+  const cInner  = rc.inner  ? hexRgba(rc.inner,  op) : color;
+  const cInner2 = rc.inner2 ? hexRgba(rc.inner2, op) : color;
+  const cCenter = rc.center ? hexRgba(rc.center, op) : color;
 
   if (cfg.shape === 'rectangle') {
-    // Outer ring
-    rectStroke(cx, cy, wPx, hPx, 0, cfg.outerRingThickness, color);
-    // Inner rings
+    rectStroke(cx, cy, wPx, hPx, 0, cfg.outerRingThickness, cOuter);
     if (cfg.rings >= 2 && cfg.innerRingThickness > 0) {
       rectStroke(cx, cy, wPx, hPx,
         cfg.outerRingThickness + cfg.ringGap,
-        cfg.innerRingThickness, color);
+        cfg.innerRingThickness, cInner);
     }
     if (cfg.rings >= 3 && cfg.innerRing2Thickness > 0) {
       const inset2 = cfg.outerRingThickness + cfg.ringGap
                    + cfg.innerRingThickness + cfg.ringGap;
-      rectStroke(cx, cy, wPx, hPx, inset2, cfg.innerRing2Thickness, color);
+      rectStroke(cx, cy, wPx, hPx, inset2, cfg.innerRing2Thickness, cInner2);
     }
     return;
   }
 
   // Ellipse / oval / circle
-  ellipseStroke(cx, cy, rx, ry, cfg.outerRingThickness, color);
+  ellipseStroke(cx, cy, rx, ry, cfg.outerRingThickness, cOuter);
 
   if (cfg.rings >= 2 && cfg.innerRingThickness > 0) {
-    ellipseStroke(cx, cy, rx - insetPx, ry - insetPx, cfg.innerRingThickness, color);
+    ellipseStroke(cx, cy, rx - insetPx, ry - insetPx, cfg.innerRingThickness, cInner);
   }
   if (cfg.rings >= 3 && cfg.innerRing2Thickness > 0) {
     const inset2 = mmPx(cfg.outerRingThickness + cfg.ringGap) +
                    mmPx(cfg.innerRingThickness  + cfg.ringGap);
-    ellipseStroke(cx, cy, rx - inset2, ry - inset2, cfg.innerRing2Thickness, color);
+    ellipseStroke(cx, cy, rx - inset2, ry - inset2, cfg.innerRing2Thickness, cInner2);
   }
   if (cfg.centerAreaDiameter > 0) {
     const cr = mmPx(cfg.centerAreaDiameter / 2);
     const sy = cfg.shape === 'oval' ? clamp(ry / rx, 0.1, 1) : 1;
-    ellipseStroke(cx, cy, cr, cr * sy, Math.max(0.4, cfg.innerRingThickness || 0.8), color);
+    ellipseStroke(cx, cy, cr, cr * sy, Math.max(0.4, cfg.innerRingThickness || 0.8), cCenter);
   }
 }
 
