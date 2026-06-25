@@ -2165,6 +2165,29 @@ function buildAlignRowHTML() {
 const LS_NUMERIC = new Set(['size','height','thickness','ringGap','centerAreaDiameter','cornerRadius','offsetX','offsetY','sizeMm','letterSpacing','wordSpacing','scaleX','scaleY','radiusMm','startAngle','endAngle','offsetXmm','offsetYmm','posXmm','posYmm','shapeSizeMm','shapeRotation','imageWidthMm','imageHeightMm']);
 
 function bindStampContextInputs(ctx) {
+  // Quick template chips
+  ctx.querySelectorAll('[data-tpl]').forEach(btn => {
+    btn.addEventListener('click', () => applyShapeKeepLayers(btn.dataset.tpl));
+  });
+  // Ring color pickers
+  ctx.querySelectorAll('[data-ls-ring]').forEach(input => {
+    const k = input.dataset.lsRing;
+    input.addEventListener('input', () => {
+      cfg.ringColors = cfg.ringColors || {};
+      cfg.ringColors[k] = input.value;
+      renderD();
+    });
+    input.addEventListener('change', autoHist);
+  });
+  ctx.querySelectorAll('[data-ls-ring-clear]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const k = btn.dataset.lsRingClear;
+      if (cfg.ringColors) cfg.ringColors[k] = null;
+      renderLeftSidebar();
+      renderD();
+      autoHist();
+    });
+  });
   // All data-ls inputs
   ctx.querySelectorAll('[data-ls]').forEach(input => {
     const key = input.dataset.ls;
@@ -2174,8 +2197,8 @@ function bindStampContextInputs(ctx) {
       let v = input.type === 'checkbox' ? input.checked : input.value;
       if (LS_NUMERIC.has(key)) v = parseFloat(v) || 0;
       if (key === 'size') {
-        const isCircle = cfg.shape === 'standardCircle' || cfg.shape === 'doubleRing' || cfg.shape === 'tripleRing' || cfg.shape === 'minimalCircle';
-        if (isCircle) cfg.outerDiameter = v; else cfg.width = v;
+        if (cfg.shape === 'circle') cfg.outerDiameter = v;
+        else { cfg.width = v; cfg.outerDiameter = v; }
       } else if (key === 'thickness') {
         cfg.outerRingThickness = v;
         if (cfg.rings >= 2) cfg.innerRingThickness = Math.round(v * 0.5 * 10) / 10;
@@ -2194,6 +2217,27 @@ function bindStampContextInputs(ctx) {
   });
   // Align buttons
   bindAlignButtons(ctx);
+}
+
+/* Switch stamp template/geometry but keep current layers intact. */
+function applyShapeKeepLayers(name) {
+  if (!TEMPLATES[name]) return;
+  const t = TEMPLATES[name];
+  cfg.template = name;
+  cfg.shape = t.shape;
+  cfg.outerDiameter = t.outerDiameter;
+  cfg.width = t.width; cfg.height = t.height;
+  cfg.outerRingThickness = t.outerRingThickness;
+  cfg.innerRingThickness = t.innerRingThickness;
+  cfg.innerRing2Thickness = t.innerRing2Thickness || t.innerRingThickness * 0.8;
+  cfg.ringGap = t.ringGap;
+  cfg.centerAreaDiameter = t.centerAreaDiameter;
+  cfg.cornerRadius = t.cornerRadius;
+  cfg.rings = t.rings;
+  syncAll();
+  renderLeftSidebar();
+  render();
+  pushHistory();
 }
 
 function bindTextContextInputs(ctx, l) {
