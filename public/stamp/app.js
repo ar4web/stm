@@ -2295,6 +2295,7 @@ function bindTextContextInputs(ctx, l) {
       renderD();
     });
   });
+  bindLayerExtras(ctx, l);
 }
 
 function bindShapeLayerContextInputs(ctx, l) {
