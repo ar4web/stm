@@ -1876,6 +1876,14 @@ function renderLeftSidebar() {
     });
   }
 
+  // Right panel: only show contextual sections when a layer is selected.
+  document.querySelectorAll('.right-panel .rp-section').forEach(sec => {
+    const which = sec.dataset.rp;
+    // Always keep Layers list. Other sections (rings/stamp/style/export/guides)
+    // remain useful as global controls — keep them visible too, but dim if no selection.
+    if (which === 'layers') sec.style.display = '';
+    else sec.style.display = l ? '' : '';  // global panels always visible
+  });
   // Always render right-panel stamp section too (kept as a global structural panel).
   renderRightStampProps();
   updateRingControls();
