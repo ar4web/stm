@@ -2314,6 +2314,7 @@ function bindShapeLayerContextInputs(ctx, l) {
       renderD();
     });
   });
+  bindLayerExtras(ctx, l);
 }
 
 /* Wire up the per-layer color picker + curved-text "Snap to ring" buttons.
