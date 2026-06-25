@@ -2315,6 +2315,36 @@ function bindShapeLayerContextInputs(ctx, l) {
   });
 }
 
+/* Wire up the per-layer color picker + curved-text "Snap to ring" buttons.
+   Reused by text/shape/image contexts. */
+function bindLayerExtras(ctx, l) {
+  const color = ctx.querySelector('[data-ls-color]');
+  if (color) {
+    color.addEventListener('input', () => {
+      l.color = color.value;
+      renderD();
+    });
+    color.addEventListener('change', autoHist);
+  }
+  const clear = ctx.querySelector('[data-ls-color-clear]');
+  if (clear) {
+    clear.addEventListener('click', () => {
+      l.color = null;
+      renderLeftSidebar();
+      renderD();
+      autoHist();
+    });
+  }
+  ctx.querySelectorAll('[data-snap]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      l.radiusMm = +ringChannelRadiusMm(btn.dataset.snap).toFixed(1);
+      renderLeftSidebar();
+      renderD();
+      autoHist();
+    });
+  });
+}
+
 function bindImageContextInputs(ctx, l) {
   bindShapeLayerContextInputs(ctx, l);
 }
