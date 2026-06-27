@@ -88,112 +88,69 @@
   <!-- ═══════════════════ WORK AREA ═══════════════════ -->
   <div class="work-area">
 
-    <!-- ─── TOOL RAIL (icon-only, Figma-style) ─── -->
-    <nav class="toolrail" aria-label="Tools">
-      <button class="tool" data-tool-panel="layers" title="Layers (L)" data-active="true">
-        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><path d="M10 3l7 4-7 4-7-4 7-4z"/><path d="M3 11l7 4 7-4"/><path d="M3 15l7 4 7-4"/></svg>
-      </button>
-      <button class="tool" data-tool-panel="shapes" title="Shapes (S)">
-        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><circle cx="14" cy="14" r="3.5"/><path d="M14 3l4 7h-8z"/></svg>
-      </button>
-      <button class="tool" data-tool-panel="add" title="Add Layer (A)">
-        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M10 4v12M4 10h12"/></svg>
-      </button>
-      <button class="tool" data-tool-panel="rings" title="Rings (R)">
-        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7.5"/><circle cx="10" cy="10" r="5"/><circle cx="10" cy="10" r="2.5"/></svg>
-      </button>
-      <button class="tool" data-tool-panel="style" title="Color & Style (C)">
-        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2a8 8 0 0 0 0 16c1 0 1.5-.7 1.5-1.5 0-.8-.6-1-.6-1.7 0-.8.7-1.3 1.6-1.3H14a4 4 0 0 0 4-4c0-4-3.6-7.5-8-7.5z"/><circle cx="6" cy="9" r="1" fill="currentColor"/><circle cx="9" cy="5.5" r="1" fill="currentColor"/><circle cx="13" cy="6" r="1" fill="currentColor"/></svg>
-      </button>
-      <button class="tool" data-tool-panel="effects" title="Effects (E)">
-        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l1 3 3 1-3 1-1 3-1-3-3-1 3-1z"/><path d="M14 9l.8 2.2L17 12l-2.2.8L14 15l-.8-2.2L11 12l2.2-.8z"/></svg>
-      </button>
-      <div class="tool-spacer"></div>
-      <button class="tool" data-tool-panel="export" title="Export (X)">
-        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v9M6 8l4 4 4-4M3 17h14"/></svg>
-      </button>
-    </nav>
+    <!-- ─── UNIFIED TOOL RAIL (accordion, BeFunky-style) ─── -->
+    <aside class="tool-rail-panel" id="toolRailPanel" aria-label="Tools">
 
-    <!-- ─── LEFT CONTEXTUAL PANEL (toggled by tool rail) ─── -->
-    <aside class="left-sidebar" id="leftSidebar">
-
-      <!-- Add Layer quick actions -->
-      <div class="ls-section ls-pad" data-panel-group="add">
-        <div class="ls-zone-title">Add Layer</div>
-        <div class="layer-actions">
-          <button class="action-btn" id="addCurved">
-            <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 11a6 6 0 0 1 12 0"/></svg>
-            Arc Text
-          </button>
-          <button class="action-btn" id="addLine">
-            <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 8h12"/><path d="M4 5v6M12 5v6"/></svg>
-            Straight Text
-          </button>
-          <button class="action-btn" id="addShape">
-            <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M8 2l1.8 3.6 4 .6-2.9 2.8.7 4L8 11l-3.6 2 .7-4L2.2 6.2l4-.6z"/></svg>
-            Shape
-          </button>
-          <button class="action-btn" id="importLogo">
-            <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1"/><circle cx="6" cy="7" r="1.2"/><path d="M2 11l3.5-3 3 2.5L11 8l3 3"/></svg>
-            Logo / Image
-          </button>
-        </div>
-        <div class="shape-picker-mini" id="shapePickerMini" style="display:none">
-          <button class="sp-item" data-shape="star" title="Star">&#9733;</button>
-          <button class="sp-item" data-shape="pentagon" title="Pentagon">&#11041;</button>
-          <button class="sp-item" data-shape="hexagon" title="Hexagon">&#11042;</button>
-          <button class="sp-item" data-shape="diamond" title="Diamond">&#9670;</button>
-          <button class="sp-item" data-shape="cross" title="Cross">&#10010;</button>
-          <button class="sp-item" data-shape="circle" title="Circle">&#9679;</button>
-        </div>
-      </div>
-
-      <!-- Shapes drag library -->
-      <div class="ls-section ls-shape-zone ls-pad" id="lsShapeZone" data-panel-group="shapes">
-        <div class="ls-zone-title">Shape Library <span class="ls-hint">drag to canvas</span></div>
-        <div class="ls-zone-grid" id="lsShapeGrid">
-          <div class="ls-zone-item" data-add-shape="star" title="Star" draggable="true">★</div>
-          <div class="ls-zone-item" data-add-shape="pentagon" title="Pentagon" draggable="true">⬠</div>
-          <div class="ls-zone-item" data-add-shape="hexagon" title="Hexagon" draggable="true">⬡</div>
-          <div class="ls-zone-item" data-add-shape="diamond" title="Diamond" draggable="true">◆</div>
-          <div class="ls-zone-item" data-add-shape="cross" title="Cross" draggable="true">✚</div>
-          <div class="ls-zone-item" data-add-shape="circle" title="Circle" draggable="true">●</div>
-        </div>
-      </div>
-
-      <!-- Dynamic context panel — shape/image layer tools -->
-      <div id="lsContext" class="ls-section ls-context" data-panel-group="layers"></div>
-
-    </aside>
-    <div class="sidebar-resize" id="sidebarResize" title="Drag to resize"></div>
-
-    <!-- ─── CANVAS VIEWPORT ─── -->
-    <section class="viewport" id="viewport" aria-label="Stamp canvas">
-      <div class="stage" id="stage">
-        <canvas id="stampCanvas"></canvas>
-      </div>
-
-      <!-- Floating zoom HUD -->
-      <div class="zoombar" role="toolbar" aria-label="Zoom controls">
-        <button id="zoomOut" title="Zoom out (-)">
-          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 8h8"/></svg>
+      <!-- Stamp Shape presets -->
+      <div class="rp-section rp-open" data-rp="stampShape">
+        <button class="rp-header">
+          <span class="rp-title">
+            <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5.5"/></svg>
+            Stamp Shape
+          </span>
+          <svg class="rp-chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
         </button>
-        <span id="zoomRead" class="zoom-label">100%</span>
-        <button id="zoomIn" title="Zoom in (+)">
-          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 4v8M4 8h8"/></svg>
-        </button>
-        <div class="zoombar-sep"></div>
-        <button id="zoomFit" title="Fit (F)">Fit</button>
-        <button id="zoom100" title="100% (0)">1:1</button>
+        <div class="rp-body">
+          <div class="ls-tpl-chips">
+            <button class="tpl-chip" data-template="standardCircle">Circle</button>
+            <button class="tpl-chip" data-template="doubleRing">Double Ring</button>
+            <button class="tpl-chip" data-template="tripleRing">Triple Ring</button>
+            <button class="tpl-chip" data-template="oval">Oval</button>
+            <button class="tpl-chip" data-template="rectangle">Rectangle</button>
+            <button class="tpl-chip" data-template="square">Square</button>
+            <button class="tpl-chip" data-template="minimalCircle">Minimal</button>
+            <button class="tpl-chip" data-template="saudiCorporate">Saudi CO.</button>
+          </div>
+        </div>
       </div>
-    </section>
 
-    <!-- ─── RIGHT PROPERTIES PANEL ─── -->
-    <aside class="right-panel" id="rightPanel">
-
-      <!-- Keep quick action IDs for JS, but visually hide (moved to topbar) -->
-      <div class="rp-quick-actions" style="display:none">
-        <button id="exportQuickStub" style="display:none"></button>
+      <!-- Add Layer -->
+      <div class="rp-section rp-open" data-rp="add">
+        <button class="rp-header">
+          <span class="rp-title">
+            <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 3v8M3 7h8"/></svg>
+            Add Layer
+          </span>
+          <svg class="rp-chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
+        </button>
+        <div class="rp-body">
+          <div class="tool-menu-list">
+            <button class="tool-menu-btn" id="addCurved">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 11a6 6 0 0 1 12 0"/></svg>
+              <span>Curved Text</span>
+            </button>
+            <button class="tool-menu-btn" id="addLine">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 8h12"/><path d="M4 5v6M12 5v6"/></svg>
+              <span>Straight Text</span>
+            </button>
+            <button class="tool-menu-btn" id="addShape">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M8 2l1.8 3.6 4 .6-2.9 2.8.7 4L8 11l-3.6 2 .7-4L2.2 6.2l4-.6z"/></svg>
+              <span>Shape</span>
+            </button>
+            <button class="tool-menu-btn" id="importLogo">
+              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1"/><circle cx="6" cy="7" r="1.2"/><path d="M2 11l3.5-3 3 2.5L11 8l3 3"/></svg>
+              <span>Logo / Image</span>
+            </button>
+          </div>
+          <div class="shape-picker-mini" id="shapePickerMini" style="display:none">
+            <button class="sp-item" data-shape="star" title="Star">&#9733;</button>
+            <button class="sp-item" data-shape="pentagon" title="Pentagon">&#11041;</button>
+            <button class="sp-item" data-shape="hexagon" title="Hexagon">&#11042;</button>
+            <button class="sp-item" data-shape="diamond" title="Diamond">&#9670;</button>
+            <button class="sp-item" data-shape="cross" title="Cross">&#10010;</button>
+            <button class="sp-item" data-shape="circle" title="Circle">&#9679;</button>
+          </div>
+        </div>
       </div>
 
       <!-- Layers -->
@@ -210,11 +167,22 @@
         </div>
       </div>
 
-      <!-- Text Properties moved into the left sidebar editor (single source of truth). -->
-      <div id="rpTextProps" style="display:none"><div id="rpTextBody"></div></div>
+      <!-- Properties (contextual, dynamic content rendered by app.js into #lsContext) -->
+      <div class="rp-section rp-open" data-rp="props" id="rpPropsSection">
+        <button class="rp-header">
+          <span class="rp-title">
+            <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h10M2 7h10M2 10h7"/></svg>
+            Properties
+          </span>
+          <svg class="rp-chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
+        </button>
+        <div class="rp-body">
+          <div id="lsContext" class="ls-context"></div>
+        </div>
+      </div>
 
       <!-- Rings -->
-      <div class="rp-section rp-open" data-rp="rings">
+      <div class="rp-section" data-rp="rings">
         <button class="rp-header">
           <span class="rp-title">
             <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7" cy="7" r="5.5"/><circle cx="7" cy="7" r="3"/></svg>
@@ -256,8 +224,8 @@
         </div>
       </div>
 
-      <!-- Stamp -->
-      <div class="rp-section rp-open" data-rp="stamp" id="rpStampSection">
+      <!-- Stamp settings -->
+      <div class="rp-section" data-rp="stamp" id="rpStampSection">
         <button class="rp-header">
           <span class="rp-title">
             <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><rect x="2" y="9" width="10" height="3" rx=".5"/><path d="M5 9V6a2 2 0 1 1 4 0v3"/></svg>
@@ -268,22 +236,36 @@
         <div class="rp-body" id="rpStampBody"></div>
       </div>
 
-      <!-- Guides -->
-      <div class="rp-section rp-open" data-rp="guides">
-        <div class="prop-section" style="padding:10px 14px">
-          <label class="effect-toggle">
-            <input type="checkbox" id="showGuides" checked>
-            <span>Show alignment guides</span>
-          </label>
+      <!-- Shape Library -->
+      <div class="rp-section" data-rp="shapes">
+        <button class="rp-header">
+          <span class="rp-title">
+            <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5"/><circle cx="10" cy="10" r="2.5"/></svg>
+            Shape Library
+          </span>
+          <svg class="rp-chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
+        </button>
+        <div class="rp-body">
+          <div class="ls-pad" id="lsShapeZone">
+            <div class="ls-hint" style="margin-bottom:6px">drag to canvas or click to add</div>
+            <div class="ls-zone-grid" id="lsShapeGrid">
+              <div class="ls-zone-item" data-add-shape="star" title="Star" draggable="true">★</div>
+              <div class="ls-zone-item" data-add-shape="pentagon" title="Pentagon" draggable="true">⬠</div>
+              <div class="ls-zone-item" data-add-shape="hexagon" title="Hexagon" draggable="true">⬡</div>
+              <div class="ls-zone-item" data-add-shape="diamond" title="Diamond" draggable="true">◆</div>
+              <div class="ls-zone-item" data-add-shape="cross" title="Cross" draggable="true">✚</div>
+              <div class="ls-zone-item" data-add-shape="circle" title="Circle" draggable="true">●</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Style / Color -->
+      <!-- Color & Effects -->
       <div class="rp-section" data-rp="style">
         <button class="rp-header">
           <span class="rp-title">
             <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1.5a5.5 5.5 0 0 0 0 11c.7 0 1-.5 1-1 0-.6-.4-.7-.4-1.2 0-.5.5-.9 1.1-.9h.6a2.7 2.7 0 0 0 2.7-2.7c0-2.7-2.5-5.2-5-5.2z"/></svg>
-            Color & Effects
+            Color &amp; Effects
           </span>
           <svg class="rp-chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
         </button>
@@ -317,6 +299,25 @@
               <label class="effect-toggle"><input type="checkbox" data-bind="rotationJitter"> <span>Rotation jitter</span></label>
               <div class="slider-row mt4"><input type="range" min="0" max="1.5" step="0.05" data-bind="jitterDegrees"><input type="number" min="0" max="1.5" step="0.05" data-bind="jitterDegrees"></div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guides -->
+      <div class="rp-section" data-rp="guides">
+        <button class="rp-header">
+          <span class="rp-title">
+            <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 7h10M7 2v10"/></svg>
+            Guides
+          </span>
+          <svg class="rp-chevron" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
+        </button>
+        <div class="rp-body">
+          <div class="prop-section">
+            <label class="effect-toggle">
+              <input type="checkbox" id="showGuides" checked>
+              <span>Show alignment guides</span>
+            </label>
           </div>
         </div>
       </div>
@@ -362,6 +363,27 @@
       </div>
 
     </aside>
+
+    <!-- ─── CANVAS VIEWPORT ─── -->
+    <section class="viewport" id="viewport" aria-label="Stamp canvas">
+      <div class="stage" id="stage">
+        <canvas id="stampCanvas"></canvas>
+      </div>
+
+      <!-- Floating zoom HUD -->
+      <div class="zoombar" role="toolbar" aria-label="Zoom controls">
+        <button id="zoomOut" title="Zoom out (-)">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 8h8"/></svg>
+        </button>
+        <span id="zoomRead" class="zoom-label">100%</span>
+        <button id="zoomIn" title="Zoom in (+)">
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 4v8M4 8h8"/></svg>
+        </button>
+        <div class="zoombar-sep"></div>
+        <button id="zoomFit" title="Fit (F)">Fit</button>
+        <button id="zoom100" title="100% (0)">1:1</button>
+      </div>
+    </section>
 
   </div>
 </div>
