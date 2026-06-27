@@ -1062,14 +1062,17 @@ const renderD = debounce(render, 40);
    ZOOM / PAN
    ================================================================ */
 function updateTransform() {
+  // Canvas is locked — always centered, pan is disabled.
+  cfg.editorPanX = 0;
+  cfg.editorPanY = 0;
   stage.style.transform =
-    `translate(-50%,-50%) translate(${cfg.editorPanX}px,${cfg.editorPanY}px) scale(${cfg.editorZoom})`;
+    `translate(-50%,-50%) scale(${cfg.editorZoom})`;
   zoomRead.textContent = Math.round(cfg.editorZoom * 100) + '%';
 }
 
-function setZoom(v, resetPan = false) {
+function setZoom(v, _resetPan = false) {
   cfg.editorZoom = clamp(v, 0.06, 14);
-  if (resetPan) { cfg.editorPanX = 0; cfg.editorPanY = 0; }
+  cfg.editorPanX = 0; cfg.editorPanY = 0;
   updateTransform();
 }
 
@@ -1078,8 +1081,10 @@ function fitView() {
   const sz = stampSize();
   const cw = (sz.w + cfg.paddingMm * 2) * CSS_MM;
   const ch = (sz.h + cfg.paddingMm * 2) * CSS_MM;
+  if (vp.width < 20 || vp.height < 20) return;
   setZoom(Math.min((vp.width - 80) / cw, (vp.height - 80) / ch), true);
 }
+
 
 function getCanvasCoords(clientX, clientY) {
   const rect = canvas.getBoundingClientRect();
@@ -1133,7 +1138,7 @@ function bindPanZoom() {
   });
 
   viewport.addEventListener('pointerdown', e => {
-    if (e.target.closest('.right-panel') || e.target.closest('.topbar') || e.target.closest('.zoombar') || e.target.closest('.left-sidebar')) return;
+    if (e.target.closest('.tool-rail-panel') || e.target.closest('.right-panel') || e.target.closest('.topbar') || e.target.closest('.zoombar') || e.target.closest('.left-sidebar')) return;
 
     const canvasCoords = getCanvasCoords(e.clientX, e.clientY);
     const mmCoords = canvasToMm(canvasCoords.x, canvasCoords.y);
@@ -1478,13 +1483,12 @@ function bindPanZoom() {
     if (activeDrag) {
       viewport.classList.add('manipulating');
       viewport.setPointerCapture(e.pointerId);
-    } else {
-      panning = true;
-      lx = e.clientX; ly = e.clientY;
-      viewport.classList.add('panning');
-      viewport.setPointerCapture(e.pointerId);
     }
+    // Canvas panning is disabled — the stage stays centered.
   });
+
+
+
 
   viewport.addEventListener('pointermove', e => {
     if (activeDrag) {
@@ -1605,13 +1609,9 @@ function bindPanZoom() {
       return;
     }
 
-    if (panning) {
-      cfg.editorPanX += e.clientX - lx;
-      cfg.editorPanY += e.clientY - ly;
-      lx = e.clientX; ly = e.clientY;
-      updateTransform();
-    }
+    // Canvas pan is disabled.
   });
+
 
   let wasDragging = false;
   ['pointerup','pointercancel','lostpointercapture'].forEach(ev =>
@@ -1659,7 +1659,7 @@ function bindPanZoom() {
   viewport.addEventListener('mousemove', e => {
     if (activeDrag) return;
     const canvasCoords = getCanvasCoords(e.clientX, e.clientY);
-    let cursor = 'grab';
+    let cursor = 'default';
     if (selShape) {
       const sz = stampSize();
       const hw = mmPx(sz.w) / 2, hh = mmPx(sz.h) / 2;
@@ -1681,6 +1681,7 @@ function bindPanZoom() {
     }
     viewport.style.cursor = cursor;
   });
+
 
   document.addEventListener('keydown', e => {
     if (e.target.matches('input,textarea,select')) return;
@@ -2507,8 +2508,11 @@ function buildLayerList() {
       buildLayerList();
       buildLayerProps();
       // Make it obvious the editor updated.
-      const ls = document.getElementById('leftSidebar');
-      if (ls) { ls.scrollTop = 0; ls.classList.remove('flash'); void ls.offsetWidth; ls.classList.add('flash'); }
+      const ls = document.getElementById('toolRailPanel') || document.getElementById('leftSidebar');
+      if (ls) { ls.classList.remove('flash'); void ls.offsetWidth; ls.classList.add('flash'); }
+      const propsSec = document.querySelector('.rp-section[data-rp="props"]');
+      if (propsSec) { propsSec.classList.add('rp-open'); propsSec.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
+
     });
 
     // Double-click the name to rename in place.
@@ -3511,42 +3515,16 @@ function initShapeZone() {
 }
 
 /* ================================================================
-   SIDEBAR RESIZE — drag to resize left sidebar
+   SIDEBAR RESIZE — removed (panel has fixed width now)
    ================================================================ */
-function initSidebarResize() {
-  const handle = document.getElementById('sidebarResize');
-  const sidebar = document.getElementById('leftSidebar');
-  if (!handle || !sidebar) return;
+function initSidebarResize() { /* no-op — sidebar resize handle removed */ }
 
-  let dragging = false, startX, startW;
-  const MIN_W = 120, MAX_W = 320;
+/* Auto-fit canvas on window resize so the stamp stays centered. */
+window.addEventListener('resize', () => {
+  if (typeof fitView === 'function') fitView();
+});
 
-  handle.addEventListener('mousedown', (e) => {
-    e.preventDefault();
-    dragging = true;
-    startX = e.clientX;
-    startW = sidebar.offsetWidth;
-    handle.classList.add('active');
-    document.body.style.cursor = 'col-resize';
-    document.body.style.userSelect = 'none';
-  });
 
-  document.addEventListener('mousemove', (e) => {
-    if (!dragging) return;
-    const dx = e.clientX - startX;
-    const newW = Math.min(MAX_W, Math.max(MIN_W, startW + dx));
-    sidebar.style.width = newW + 'px';
-    document.documentElement.style.setProperty('--left-w', newW + 'px');
-  });
-
-  document.addEventListener('mouseup', () => {
-    if (!dragging) return;
-    dragging = false;
-    handle.classList.remove('active');
-    document.body.style.cursor = '';
-    document.body.style.userSelect = '';
-  });
-}
 
 /* ================================================================
    INIT
@@ -3692,13 +3670,17 @@ function init() {
   /* Guide toggle */
   document.getElementById('showGuides').addEventListener('change', () => render());
 
-  /* Initial render at 1:1 (100% zoom) */
+  /* Initial render at 1:1 (canvas is centered & locked). */
   if (!loaded) {
     render();
     setZoom(1, true);
     pushHistory();
+  } else {
+    updateTransform();
   }
   document.fonts.ready.then(() => { render(); });
 }
 
 init();
+
+

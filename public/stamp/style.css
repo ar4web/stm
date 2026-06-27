@@ -167,10 +167,49 @@ button{ font-family:inherit; cursor:pointer; }
 /* ═══════════════════ WORK AREA ═══════════════════ */
 .work-area{
   display:grid;
-  grid-template-columns: var(--toolrail-w) auto 4px 1fr 280px;
+  grid-template-columns: 280px 1fr;
   overflow:hidden;
   height:100%;
 }
+
+/* ─── UNIFIED TOOL RAIL PANEL (accordion) ─── */
+.tool-rail-panel{
+  background:var(--bg-panel);
+  border-right:1px solid var(--border);
+  overflow-y:auto;
+  display:flex; flex-direction:column;
+}
+
+/* Stamp template chips */
+.ls-tpl-chips{
+  display:grid; grid-template-columns:repeat(2,1fr); gap:6px;
+  padding:8px 14px 12px;
+}
+.tpl-chip{
+  padding:7px 8px;
+  background:var(--bg-panel-2); border:1px solid var(--border);
+  border-radius:var(--r-md); color:var(--text);
+  font-size:11.5px; text-align:center;
+  transition:all .12s;
+}
+.tpl-chip:hover{ background:var(--bg-hover); border-color:var(--accent); color:var(--accent-hi); }
+.tpl-chip.active{ background:var(--accent-bg); border-color:var(--accent); color:var(--accent-hi); }
+
+/* Vertical tool menu list (BeFunky-style buttons) */
+.tool-menu-list{ display:flex; flex-direction:column; padding:4px 8px 8px; gap:2px; }
+.tool-menu-btn{
+  width:100%; height:34px;
+  display:inline-flex; align-items:center; gap:10px;
+  padding:0 10px;
+  background:transparent; border:none; border-radius:var(--r-md);
+  color:var(--text); font-size:12px; text-align:left;
+  transition:background .12s, color .12s;
+}
+.tool-menu-btn svg{ color:var(--text-muted); flex-shrink:0; }
+.tool-menu-btn:hover{ background:var(--bg-hover); }
+.tool-menu-btn:hover svg{ color:var(--accent-hi); }
+
+
 
 /* ─── TOOL RAIL ─── */
 .toolrail{
@@ -617,15 +656,16 @@ textarea:focus{ outline:none; border-color:var(--accent); }
 
 /* ═══════════════════ RESPONSIVE ═══════════════════ */
 @media (max-width: 1080px){
-  .work-area{ grid-template-columns: var(--toolrail-w) auto 4px 1fr 260px; }
-  .left-sidebar{ width:220px; }
+  .work-area{ grid-template-columns: 260px 1fr; }
 }
 @media (max-width: 860px){
   .tb-doc-title{ display:none; }
-  .work-area{ grid-template-columns: var(--toolrail-w) 1fr 4px 0 0; }
-  .left-sidebar{ width:200px; }
-  .right-panel{ display:none; }
+  .work-area{ grid-template-columns: 240px 1fr; }
 }
+
+/* Canvas locked — no pan cursor */
+.viewport, .viewport.panning{ cursor:default !important; }
+
 
 /* ═══════════════════ DYNAMIC INJECTED CONTENT ═══════════════════ */
 
