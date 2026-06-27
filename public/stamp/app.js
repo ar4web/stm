@@ -3670,16 +3670,17 @@ function init() {
   /* Guide toggle */
   document.getElementById('showGuides').addEventListener('change', () => render());
 
-  /* Initial render — fit the stamp to viewport (canvas is centered & locked). */
+  /* Initial render at 1:1 (canvas is centered & locked). */
   if (!loaded) {
     render();
-    fitView();
+    setZoom(1, true);
     pushHistory();
   } else {
-    fitView();
+    updateTransform();
   }
-  document.fonts.ready.then(() => { render(); fitView(); });
+  document.fonts.ready.then(() => { render(); });
 }
 
 init();
+
 
