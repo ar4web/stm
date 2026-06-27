@@ -1485,6 +1485,9 @@ function bindPanZoom() {
       viewport.setPointerCapture(e.pointerId);
     }
     // Canvas panning is disabled — the stage stays centered.
+  });
+
+
 
 
   viewport.addEventListener('pointermove', e => {
