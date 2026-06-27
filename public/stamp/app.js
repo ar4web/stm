@@ -3512,42 +3512,16 @@ function initShapeZone() {
 }
 
 /* ================================================================
-   SIDEBAR RESIZE — drag to resize left sidebar
+   SIDEBAR RESIZE — removed (panel has fixed width now)
    ================================================================ */
-function initSidebarResize() {
-  const handle = document.getElementById('sidebarResize');
-  const sidebar = document.getElementById('leftSidebar');
-  if (!handle || !sidebar) return;
+function initSidebarResize() { /* no-op — sidebar resize handle removed */ }
 
-  let dragging = false, startX, startW;
-  const MIN_W = 120, MAX_W = 320;
+/* Auto-fit canvas on window resize so the stamp stays centered. */
+window.addEventListener('resize', () => {
+  if (typeof fitView === 'function') fitView();
+});
 
-  handle.addEventListener('mousedown', (e) => {
-    e.preventDefault();
-    dragging = true;
-    startX = e.clientX;
-    startW = sidebar.offsetWidth;
-    handle.classList.add('active');
-    document.body.style.cursor = 'col-resize';
-    document.body.style.userSelect = 'none';
-  });
 
-  document.addEventListener('mousemove', (e) => {
-    if (!dragging) return;
-    const dx = e.clientX - startX;
-    const newW = Math.min(MAX_W, Math.max(MIN_W, startW + dx));
-    sidebar.style.width = newW + 'px';
-    document.documentElement.style.setProperty('--left-w', newW + 'px');
-  });
-
-  document.addEventListener('mouseup', () => {
-    if (!dragging) return;
-    dragging = false;
-    handle.classList.remove('active');
-    document.body.style.cursor = '';
-    document.body.style.userSelect = '';
-  });
-}
 
 /* ================================================================
    INIT
