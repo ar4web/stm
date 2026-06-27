@@ -1138,7 +1138,7 @@ function bindPanZoom() {
   });
 
   viewport.addEventListener('pointerdown', e => {
-    if (e.target.closest('.right-panel') || e.target.closest('.topbar') || e.target.closest('.zoombar') || e.target.closest('.left-sidebar')) return;
+    if (e.target.closest('.tool-rail-panel') || e.target.closest('.right-panel') || e.target.closest('.topbar') || e.target.closest('.zoombar') || e.target.closest('.left-sidebar')) return;
 
     const canvasCoords = getCanvasCoords(e.clientX, e.clientY);
     const mmCoords = canvasToMm(canvasCoords.x, canvasCoords.y);
