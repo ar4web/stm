@@ -1609,13 +1609,9 @@ function bindPanZoom() {
       return;
     }
 
-    if (panning) {
-      cfg.editorPanX += e.clientX - lx;
-      cfg.editorPanY += e.clientY - ly;
-      lx = e.clientX; ly = e.clientY;
-      updateTransform();
-    }
+    // Canvas pan is disabled.
   });
+
 
   let wasDragging = false;
   ['pointerup','pointercancel','lostpointercapture'].forEach(ev =>
