@@ -2508,8 +2508,11 @@ function buildLayerList() {
       buildLayerList();
       buildLayerProps();
       // Make it obvious the editor updated.
-      const ls = document.getElementById('leftSidebar');
-      if (ls) { ls.scrollTop = 0; ls.classList.remove('flash'); void ls.offsetWidth; ls.classList.add('flash'); }
+      const ls = document.getElementById('toolRailPanel') || document.getElementById('leftSidebar');
+      if (ls) { ls.classList.remove('flash'); void ls.offsetWidth; ls.classList.add('flash'); }
+      const propsSec = document.querySelector('.rp-section[data-rp="props"]');
+      if (propsSec) { propsSec.classList.add('rp-open'); propsSec.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
+
     });
 
     // Double-click the name to rename in place.
