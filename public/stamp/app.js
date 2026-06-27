@@ -1659,7 +1659,7 @@ function bindPanZoom() {
   viewport.addEventListener('mousemove', e => {
     if (activeDrag) return;
     const canvasCoords = getCanvasCoords(e.clientX, e.clientY);
-    let cursor = 'grab';
+    let cursor = 'default';
     if (selShape) {
       const sz = stampSize();
       const hw = mmPx(sz.w) / 2, hh = mmPx(sz.h) / 2;
@@ -1681,6 +1681,7 @@ function bindPanZoom() {
     }
     viewport.style.cursor = cursor;
   });
+
 
   document.addEventListener('keydown', e => {
     if (e.target.matches('input,textarea,select')) return;
