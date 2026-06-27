@@ -656,15 +656,16 @@ textarea:focus{ outline:none; border-color:var(--accent); }
 
 /* ═══════════════════ RESPONSIVE ═══════════════════ */
 @media (max-width: 1080px){
-  .work-area{ grid-template-columns: var(--toolrail-w) auto 4px 1fr 260px; }
-  .left-sidebar{ width:220px; }
+  .work-area{ grid-template-columns: 260px 1fr; }
 }
 @media (max-width: 860px){
   .tb-doc-title{ display:none; }
-  .work-area{ grid-template-columns: var(--toolrail-w) 1fr 4px 0 0; }
-  .left-sidebar{ width:200px; }
-  .right-panel{ display:none; }
+  .work-area{ grid-template-columns: 240px 1fr; }
 }
+
+/* Canvas locked — no pan cursor */
+.viewport, .viewport.panning{ cursor:default !important; }
+
 
 /* ═══════════════════ DYNAMIC INJECTED CONTENT ═══════════════════ */
 
