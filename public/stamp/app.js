@@ -1483,13 +1483,9 @@ function bindPanZoom() {
     if (activeDrag) {
       viewport.classList.add('manipulating');
       viewport.setPointerCapture(e.pointerId);
-    } else {
-      panning = true;
-      lx = e.clientX; ly = e.clientY;
-      viewport.classList.add('panning');
-      viewport.setPointerCapture(e.pointerId);
     }
-  });
+    // Canvas panning is disabled — the stage stays centered.
+
 
   viewport.addEventListener('pointermove', e => {
     if (activeDrag) {
