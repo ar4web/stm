@@ -1520,7 +1520,15 @@ function bindPanZoom() {
 
 
   viewport.addEventListener('pointermove', e => {
+    if (panning) {
+      cfg.editorPanX = (cfg.editorPanX || 0) + (e.clientX - lx);
+      cfg.editorPanY = (cfg.editorPanY || 0) + (e.clientY - ly);
+      lx = e.clientX; ly = e.clientY;
+      updateTransform();
+      return;
+    }
     if (activeDrag) {
+
       const canvasCoords = getCanvasCoords(e.clientX, e.clientY);
       const mmCoords = canvasToMm(canvasCoords.x, canvasCoords.y);
       const aspect = getShapeAspect();
