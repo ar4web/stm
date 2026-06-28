@@ -3690,6 +3690,10 @@ function init() {
   document.getElementById('zoomOut').addEventListener('click', () => setZoom(cfg.editorZoom / 1.2));
   document.getElementById('zoom100').addEventListener('click', () => setZoom(1, true));
   document.getElementById('zoomFit').addEventListener('click', fitView);
+  document.getElementById('zoomReset')?.addEventListener('click', resetView);
+  document.getElementById('zoomDouble')?.addEventListener('click', () => setZoom(2, true));
+  document.getElementById('zoomHalf')?.addEventListener('click', () => setZoom(0.5, true));
+
 
   /* Save button */
   document.getElementById('saveBtn').addEventListener('click', () => { saveState(); showToast('Saved'); });
