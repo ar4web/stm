@@ -687,22 +687,14 @@ textarea:focus{ outline:none; border-color:var(--accent); }
 @media (max-width: 720px){
   :root{ --topbar-h: 40px; }
   .work-area{ --sidebar-w: 86vw; }
-  .tool-rail-panel{
-    position:absolute; top:0; left:0; bottom:0;
-    width:86vw; max-width:320px; z-index:40;
-    box-shadow:4px 0 18px rgba(0,0,0,.5);
-  }
-  .work-area{ grid-template-columns: 1fr; position:relative; }
-  .work-area:not(.sidebar-collapsed) .viewport{ pointer-events:none; }
+  .tool-rail-panel{ max-width:320px; }
   .logo-text{ display:none; }
   .tb-btn-ghost span, .tb-btn-primary span{ display:none; }
 }
 
-/* Canvas locked — no pan cursor */
-.viewport, .viewport.panning{ cursor:default !important; }
-
 /* Sidebar toggle active state */
 #sidebarToggle[aria-pressed="false"]{ color:var(--text-muted); }
+
 
 
 /* ═══════════════════ DYNAMIC INJECTED CONTENT ═══════════════════ */
