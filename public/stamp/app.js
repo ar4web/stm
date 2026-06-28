@@ -1146,8 +1146,19 @@ function bindPanZoom() {
   viewport.addEventListener('pointerdown', e => {
     if (e.target.closest('.tool-rail-panel') || e.target.closest('.right-panel') || e.target.closest('.topbar') || e.target.closest('.zoombar') || e.target.closest('.left-sidebar')) return;
 
+    // Pan: middle mouse, space-held, or alt-drag
+    if (e.button === 1 || spaceHeld || e.altKey) {
+      e.preventDefault();
+      panning = true;
+      lx = e.clientX; ly = e.clientY;
+      viewport.classList.add('panning');
+      viewport.setPointerCapture(e.pointerId);
+      return;
+    }
+
     const canvasCoords = getCanvasCoords(e.clientX, e.clientY);
     const mmCoords = canvasToMm(canvasCoords.x, canvasCoords.y);
+
 
     const l = selShape ? null : selLayer();
     const aspect = getShapeAspect();
