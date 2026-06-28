@@ -167,9 +167,16 @@ button{ font-family:inherit; cursor:pointer; }
 /* ═══════════════════ WORK AREA ═══════════════════ */
 .work-area{
   display:grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: var(--sidebar-w, 280px) 1fr;
   overflow:hidden;
   height:100%;
+  transition:grid-template-columns .22s ease;
+  min-width:0;
+}
+.work-area.sidebar-collapsed{ grid-template-columns: 0 1fr; }
+.work-area.sidebar-collapsed .tool-rail-panel{
+  transform:translateX(-100%);
+  border-right:none;
 }
 
 /* ─── UNIFIED TOOL RAIL PANEL (accordion) ─── */
@@ -177,7 +184,10 @@ button{ font-family:inherit; cursor:pointer; }
   background:var(--bg-panel);
   border-right:1px solid var(--border);
   overflow-y:auto;
+  overflow-x:hidden;
   display:flex; flex-direction:column;
+  transition:transform .22s ease;
+  min-width:0;
 }
 
 /* Stamp template chips */
