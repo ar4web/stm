@@ -1109,10 +1109,22 @@ function canvasToMm(x, y) {
   return { dxMm, dyMm };
 }
 
+let spaceHeld = false;
+window.addEventListener('keydown', e => {
+  if (e.code === 'Space' && !e.target.matches('input,textarea,select')) {
+    if (!spaceHeld) { spaceHeld = true; document.body.classList.add('space-pan'); }
+    e.preventDefault();
+  }
+});
+window.addEventListener('keyup', e => {
+  if (e.code === 'Space') { spaceHeld = false; document.body.classList.remove('space-pan'); }
+});
+
 function bindPanZoom() {
   let panning = false, lx = 0, ly = 0;
   let activeDrag = null;
   let pinchDist = 0;
+
 
   /* ── Pinch-to-zoom for touch ────────────────────────────────── */
   viewport.addEventListener('touchstart', e => {
