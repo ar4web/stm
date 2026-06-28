@@ -3719,7 +3719,6 @@ function init() {
     workArea.classList.toggle('sidebar-collapsed', collapsed);
     sbToggle.setAttribute('aria-pressed', String(!collapsed));
     try { localStorage.setItem(SB_KEY, collapsed ? '1' : '0'); } catch {}
-    setTimeout(() => { try { fitView(); } catch {} }, 240);
   };
   // Default: collapsed on small screens
   let sbStart = false;
@@ -3729,12 +3728,6 @@ function init() {
   sbToggle.addEventListener('click', () => {
     applySidebar(!workArea.classList.contains('sidebar-collapsed'));
   });
-  // Close sidebar when clicking canvas on mobile
-  document.querySelector('.viewport')?.addEventListener('pointerdown', () => {
-    if (window.innerWidth <= 720 && !workArea.classList.contains('sidebar-collapsed')) {
-      applySidebar(true);
-    }
-  }, true);
   // Keyboard shortcut: [
   window.addEventListener('keydown', (e) => {
     if (e.key === '[' && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -3742,6 +3735,7 @@ function init() {
       if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
       e.preventDefault();
       applySidebar(!workArea.classList.contains('sidebar-collapsed'));
+
     }
   });
 
