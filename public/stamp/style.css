@@ -166,29 +166,37 @@ button{ font-family:inherit; cursor:pointer; }
 
 /* ═══════════════════ WORK AREA ═══════════════════ */
 .work-area{
-  display:grid;
-  grid-template-columns: var(--sidebar-w, 280px) 1fr;
+  position:relative;
+  display:block;
   overflow:hidden;
   height:100%;
-  transition:grid-template-columns .22s ease;
   min-width:0;
 }
-.work-area.sidebar-collapsed{ grid-template-columns: 0 1fr; }
-.work-area.sidebar-collapsed .tool-rail-panel{
-  transform:translateX(-100%);
-  border-right:none;
-}
 
-/* ─── UNIFIED TOOL RAIL PANEL (accordion) ─── */
+/* ─── FLOATING TOOL RAIL PANEL (accordion) ─── */
 .tool-rail-panel{
-  background:var(--bg-panel);
-  border-right:1px solid var(--border);
+  position:absolute;
+  top:10px; left:10px; bottom:10px;
+  width:var(--sidebar-w, 280px);
+  background:rgba(44,44,44,0.96);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border:1px solid var(--border-strong);
+  border-radius:10px;
+  box-shadow:0 12px 36px rgba(0,0,0,.55);
   overflow-y:auto;
   overflow-x:hidden;
   display:flex; flex-direction:column;
-  transition:transform .22s ease;
+  transition:transform .22s ease, opacity .22s ease;
+  z-index:30;
   min-width:0;
 }
+.work-area.sidebar-collapsed .tool-rail-panel{
+  transform:translateX(calc(-100% - 16px));
+  opacity:0;
+  pointer-events:none;
+}
+
 
 /* Stamp template chips */
 .ls-tpl-chips{
