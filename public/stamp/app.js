@@ -1062,21 +1062,26 @@ const renderD = debounce(render, 40);
    ZOOM / PAN
    ================================================================ */
 function updateTransform() {
-  // Canvas is locked — always centered, pan is disabled.
-  cfg.editorPanX = 0;
-  cfg.editorPanY = 0;
+  const px = cfg.editorPanX || 0;
+  const py = cfg.editorPanY || 0;
   stage.style.transform =
-    `translate(-50%,-50%) scale(${cfg.editorZoom})`;
+    `translate(-50%,-50%) translate(${px}px, ${py}px) scale(${cfg.editorZoom})`;
   zoomRead.textContent = Math.round(cfg.editorZoom * 100) + '%';
 }
 
 function setZoom(v, _resetPan = false) {
   cfg.editorZoom = clamp(v, 0.06, 14);
-  cfg.editorPanX = 0; cfg.editorPanY = 0;
+  if (_resetPan) { cfg.editorPanX = 0; cfg.editorPanY = 0; }
   updateTransform();
 }
 
+function resetView() {
+  cfg.editorPanX = 0; cfg.editorPanY = 0;
+  setZoom(1, true);
+}
+
 function fitView() {
+  cfg.editorPanX = 0; cfg.editorPanY = 0;
   const vp = viewport.getBoundingClientRect();
   const sz = stampSize();
   const cw = (sz.w + cfg.paddingMm * 2) * CSS_MM;
@@ -1084,6 +1089,7 @@ function fitView() {
   if (vp.width < 20 || vp.height < 20) return;
   setZoom(Math.min((vp.width - 80) / cw, (vp.height - 80) / ch), true);
 }
+
 
 
 function getCanvasCoords(clientX, clientY) {
@@ -1103,10 +1109,22 @@ function canvasToMm(x, y) {
   return { dxMm, dyMm };
 }
 
+let spaceHeld = false;
+window.addEventListener('keydown', e => {
+  if (e.code === 'Space' && !e.target.matches('input,textarea,select')) {
+    if (!spaceHeld) { spaceHeld = true; document.body.classList.add('space-pan'); }
+    e.preventDefault();
+  }
+});
+window.addEventListener('keyup', e => {
+  if (e.code === 'Space') { spaceHeld = false; document.body.classList.remove('space-pan'); }
+});
+
 function bindPanZoom() {
   let panning = false, lx = 0, ly = 0;
   let activeDrag = null;
   let pinchDist = 0;
+
 
   /* ── Pinch-to-zoom for touch ────────────────────────────────── */
   viewport.addEventListener('touchstart', e => {
@@ -1140,8 +1158,19 @@ function bindPanZoom() {
   viewport.addEventListener('pointerdown', e => {
     if (e.target.closest('.tool-rail-panel') || e.target.closest('.right-panel') || e.target.closest('.topbar') || e.target.closest('.zoombar') || e.target.closest('.left-sidebar')) return;
 
+    // Pan: middle mouse, space-held, or alt-drag
+    if (e.button === 1 || spaceHeld || e.altKey) {
+      e.preventDefault();
+      panning = true;
+      lx = e.clientX; ly = e.clientY;
+      viewport.classList.add('panning');
+      viewport.setPointerCapture(e.pointerId);
+      return;
+    }
+
     const canvasCoords = getCanvasCoords(e.clientX, e.clientY);
     const mmCoords = canvasToMm(canvasCoords.x, canvasCoords.y);
+
 
     const l = selShape ? null : selLayer();
     const aspect = getShapeAspect();
@@ -1491,7 +1520,15 @@ function bindPanZoom() {
 
 
   viewport.addEventListener('pointermove', e => {
+    if (panning) {
+      cfg.editorPanX = (cfg.editorPanX || 0) + (e.clientX - lx);
+      cfg.editorPanY = (cfg.editorPanY || 0) + (e.clientY - ly);
+      lx = e.clientX; ly = e.clientY;
+      updateTransform();
+      return;
+    }
     if (activeDrag) {
+
       const canvasCoords = getCanvasCoords(e.clientX, e.clientY);
       const mmCoords = canvasToMm(canvasCoords.x, canvasCoords.y);
       const aspect = getShapeAspect();
@@ -3653,6 +3690,10 @@ function init() {
   document.getElementById('zoomOut').addEventListener('click', () => setZoom(cfg.editorZoom / 1.2));
   document.getElementById('zoom100').addEventListener('click', () => setZoom(1, true));
   document.getElementById('zoomFit').addEventListener('click', fitView);
+  document.getElementById('zoomReset')?.addEventListener('click', resetView);
+  document.getElementById('zoomDouble')?.addEventListener('click', () => setZoom(2, true));
+  document.getElementById('zoomHalf')?.addEventListener('click', () => setZoom(0.5, true));
+
 
   /* Save button */
   document.getElementById('saveBtn').addEventListener('click', () => { saveState(); showToast('Saved'); });
@@ -3678,7 +3719,6 @@ function init() {
     workArea.classList.toggle('sidebar-collapsed', collapsed);
     sbToggle.setAttribute('aria-pressed', String(!collapsed));
     try { localStorage.setItem(SB_KEY, collapsed ? '1' : '0'); } catch {}
-    setTimeout(() => { try { fitView(); } catch {} }, 240);
   };
   // Default: collapsed on small screens
   let sbStart = false;
@@ -3688,12 +3728,6 @@ function init() {
   sbToggle.addEventListener('click', () => {
     applySidebar(!workArea.classList.contains('sidebar-collapsed'));
   });
-  // Close sidebar when clicking canvas on mobile
-  document.querySelector('.viewport')?.addEventListener('pointerdown', () => {
-    if (window.innerWidth <= 720 && !workArea.classList.contains('sidebar-collapsed')) {
-      applySidebar(true);
-    }
-  }, true);
   // Keyboard shortcut: [
   window.addEventListener('keydown', (e) => {
     if (e.key === '[' && !e.ctrlKey && !e.metaKey && !e.altKey) {
@@ -3701,6 +3735,7 @@ function init() {
       if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
       e.preventDefault();
       applySidebar(!workArea.classList.contains('sidebar-collapsed'));
+
     }
   });
 
