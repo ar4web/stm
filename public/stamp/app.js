@@ -3670,6 +3670,40 @@ function init() {
   /* Guide toggle */
   document.getElementById('showGuides').addEventListener('change', () => render());
 
+  /* Sidebar collapse toggle */
+  const workArea = document.querySelector('.work-area');
+  const sbToggle = document.getElementById('sidebarToggle');
+  const SB_KEY = 'stamp.sidebarCollapsed';
+  const applySidebar = (collapsed) => {
+    workArea.classList.toggle('sidebar-collapsed', collapsed);
+    sbToggle.setAttribute('aria-pressed', String(!collapsed));
+    try { localStorage.setItem(SB_KEY, collapsed ? '1' : '0'); } catch {}
+    setTimeout(() => { try { fitView(); } catch {} }, 240);
+  };
+  // Default: collapsed on small screens
+  let sbStart = false;
+  try { sbStart = localStorage.getItem(SB_KEY) === '1'; } catch {}
+  if (window.innerWidth <= 720 && localStorage.getItem(SB_KEY) === null) sbStart = true;
+  applySidebar(sbStart);
+  sbToggle.addEventListener('click', () => {
+    applySidebar(!workArea.classList.contains('sidebar-collapsed'));
+  });
+  // Close sidebar when clicking canvas on mobile
+  document.querySelector('.viewport')?.addEventListener('pointerdown', () => {
+    if (window.innerWidth <= 720 && !workArea.classList.contains('sidebar-collapsed')) {
+      applySidebar(true);
+    }
+  }, true);
+  // Keyboard shortcut: [
+  window.addEventListener('keydown', (e) => {
+    if (e.key === '[' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      const t = e.target;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+      e.preventDefault();
+      applySidebar(!workArea.classList.contains('sidebar-collapsed'));
+    }
+  });
+
   /* Initial render at 1:1 (canvas is centered & locked). */
   if (!loaded) {
     render();
