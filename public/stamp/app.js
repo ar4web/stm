@@ -1062,21 +1062,26 @@ const renderD = debounce(render, 40);
    ZOOM / PAN
    ================================================================ */
 function updateTransform() {
-  // Canvas is locked — always centered, pan is disabled.
-  cfg.editorPanX = 0;
-  cfg.editorPanY = 0;
+  const px = cfg.editorPanX || 0;
+  const py = cfg.editorPanY || 0;
   stage.style.transform =
-    `translate(-50%,-50%) scale(${cfg.editorZoom})`;
+    `translate(-50%,-50%) translate(${px}px, ${py}px) scale(${cfg.editorZoom})`;
   zoomRead.textContent = Math.round(cfg.editorZoom * 100) + '%';
 }
 
 function setZoom(v, _resetPan = false) {
   cfg.editorZoom = clamp(v, 0.06, 14);
-  cfg.editorPanX = 0; cfg.editorPanY = 0;
+  if (_resetPan) { cfg.editorPanX = 0; cfg.editorPanY = 0; }
   updateTransform();
 }
 
+function resetView() {
+  cfg.editorPanX = 0; cfg.editorPanY = 0;
+  setZoom(1, true);
+}
+
 function fitView() {
+  cfg.editorPanX = 0; cfg.editorPanY = 0;
   const vp = viewport.getBoundingClientRect();
   const sz = stampSize();
   const cw = (sz.w + cfg.paddingMm * 2) * CSS_MM;
@@ -1084,6 +1089,7 @@ function fitView() {
   if (vp.width < 20 || vp.height < 20) return;
   setZoom(Math.min((vp.width - 80) / cw, (vp.height - 80) / ch), true);
 }
+
 
 
 function getCanvasCoords(clientX, clientY) {
