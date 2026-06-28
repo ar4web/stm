@@ -337,9 +337,13 @@ button{ font-family:inherit; cursor:pointer; }
   background:
     repeating-conic-gradient(#1a1a1a 0% 25%, #1e1e1e 0% 50%) 0 0/24px 24px;
   background-color:var(--bg-canvas);
-  position:relative; overflow:hidden;
+  position:absolute; inset:0;
+  overflow:hidden;
   display:flex; align-items:center; justify-content:center;
 }
+.viewport.panning{ cursor:grabbing; }
+body.space-pan .viewport{ cursor:grab; }
+
 .stage{
   position:relative;
   filter:drop-shadow(0 12px 36px rgba(0,0,0,.5));
