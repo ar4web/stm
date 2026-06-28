@@ -665,16 +665,32 @@ textarea:focus{ outline:none; border-color:var(--accent); }
 .shortcut-row span{ flex:1; }
 
 /* ═══════════════════ RESPONSIVE ═══════════════════ */
-@media (max-width: 1080px){
-  .work-area{ grid-template-columns: 260px 1fr; }
+@media (max-width: 1200px){
+  .work-area{ --sidebar-w: 260px; }
 }
-@media (max-width: 860px){
+@media (max-width: 960px){
   .tb-doc-title{ display:none; }
-  .work-area{ grid-template-columns: 240px 1fr; }
+  .work-area{ --sidebar-w: 240px; }
+}
+@media (max-width: 720px){
+  :root{ --topbar-h: 40px; }
+  .work-area{ --sidebar-w: 86vw; }
+  .tool-rail-panel{
+    position:absolute; top:0; left:0; bottom:0;
+    width:86vw; max-width:320px; z-index:40;
+    box-shadow:4px 0 18px rgba(0,0,0,.5);
+  }
+  .work-area{ grid-template-columns: 1fr; position:relative; }
+  .work-area:not(.sidebar-collapsed) .viewport{ pointer-events:none; }
+  .logo-text{ display:none; }
+  .tb-btn-ghost span, .tb-btn-primary span{ display:none; }
 }
 
 /* Canvas locked — no pan cursor */
 .viewport, .viewport.panning{ cursor:default !important; }
+
+/* Sidebar toggle active state */
+#sidebarToggle[aria-pressed="false"]{ color:var(--text-muted); }
 
 
 /* ═══════════════════ DYNAMIC INJECTED CONTENT ═══════════════════ */
