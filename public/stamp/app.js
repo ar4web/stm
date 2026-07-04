@@ -3384,14 +3384,17 @@ function init() {
     openSection('text');
   });
 
-  /* Export */
-  document.getElementById('pngTransparent').addEventListener('click', () => exportPNG(false));
-  document.getElementById('pngWhite').addEventListener('click',       () => exportPNG(true));
+  /* Export — most items are inside the dropdown (wired by initExportDropdown).
+     Guard the direct-ID lookups so missing legacy buttons don't crash init. */
+  const _on = (id, ev, fn) => { const el = document.getElementById(id); if (el) el.addEventListener(ev, fn); };
+  _on('pngTransparent', 'click', () => exportPNG(false));
+  _on('pngWhite',       'click', () => exportPNG(true));
   initExportDropdown();
-  document.getElementById('svgExport').addEventListener('click',      exportSVG);
-  document.getElementById('saveConfig').addEventListener('click',     saveConfig);
-  document.getElementById('loadConfig').addEventListener('click',     () => document.getElementById('loadConfigFile').click());
-  document.getElementById('loadConfigFile').addEventListener('change', loadConfigFile);
+  _on('svgExport',      'click', exportSVG);
+  _on('saveConfig',     'click', saveConfig);
+  _on('loadConfig',     'click', () => { const f = document.getElementById('loadConfigFile'); if (f) f.click(); });
+  _on('loadConfigFile', 'change', loadConfigFile);
+
 
   /* Alignment */
   document.querySelectorAll('[data-align]').forEach(btn => {
