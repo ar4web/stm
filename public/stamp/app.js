@@ -3578,3 +3578,73 @@ function init() {
 init();
 
 
+
+/* ── Draggable floating Editor panel ─────────────────────────── */
+(function enableEditorPanelDrag(){
+  const panel = document.getElementById('rightEditorPanel');
+  if (!panel) return;
+  const header = panel.querySelector('.rep-header');
+  if (!header) return;
+
+  const STORAGE = 'stamp.editorPanelPos';
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE) || 'null');
+    if (saved && typeof saved.left === 'number' && typeof saved.top === 'number') {
+      applyPos(saved.left, saved.top);
+    }
+  } catch(_){}
+
+  function applyPos(left, top){
+    const parent = panel.parentElement;
+    const pr = parent.getBoundingClientRect();
+    const w = panel.offsetWidth || 248;
+    const h = panel.offsetHeight || 300;
+    left = Math.max(0, Math.min(left, pr.width  - Math.min(w, pr.width)));
+    top  = Math.max(0, Math.min(top,  pr.height - Math.min(40, pr.height)));
+    panel.style.left = left + 'px';
+    panel.style.top = top + 'px';
+    panel.style.right = 'auto';
+    panel.style.bottom = 'auto';
+  }
+
+  let dragging = false, sx = 0, sy = 0, ox = 0, oy = 0;
+
+  header.addEventListener('pointerdown', e => {
+    if (e.target.closest('.rep-close')) return;
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    const parent = panel.parentElement;
+    const pr = parent.getBoundingClientRect();
+    const r = panel.getBoundingClientRect();
+    ox = r.left - pr.left;
+    oy = r.top  - pr.top;
+    sx = e.clientX; sy = e.clientY;
+    dragging = true;
+    panel.classList.add('rep-dragging');
+    header.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+
+  header.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    applyPos(ox + (e.clientX - sx), oy + (e.clientY - sy));
+  });
+
+  function end(e){
+    if (!dragging) return;
+    dragging = false;
+    panel.classList.remove('rep-dragging');
+    try { header.releasePointerCapture(e.pointerId); } catch(_){}
+    try {
+      localStorage.setItem(STORAGE, JSON.stringify({
+        left: parseFloat(panel.style.left) || 0,
+        top:  parseFloat(panel.style.top)  || 0
+      }));
+    } catch(_){}
+  }
+  header.addEventListener('pointerup', end);
+  header.addEventListener('pointercancel', end);
+
+  window.addEventListener('resize', () => {
+    if (panel.style.left) applyPos(parseFloat(panel.style.left), parseFloat(panel.style.top));
+  });
+})();
