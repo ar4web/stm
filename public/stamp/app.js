@@ -2500,8 +2500,29 @@ function escapeHtml(s) {
 
 function buildLayerList() {
   const list = document.getElementById('layerList');
-  list.innerHTML = cfg.layers.map(l =>
-    `<div class="layer-item${selectedIds.has(l.id) ? ' active' : ''}" data-id="${l.id}">
+  const rv = cfg.ringVisible || {};
+  const stampActive = selShape && !selRing ? ' active' : '';
+  const ringItem = (key, label, thick) => {
+    const visible = rv[key] !== false;
+    const active = (selShape && selRing === key) ? ' active' : '';
+    return `<div class="layer-item layer-item--ring${active}" data-stamp="ring-${key}">
+      <span class="layer-vis" data-act="ring-vis" data-ring="${key}" title="Show/hide">${visible ? ICO_EYE_ON : ICO_EYE_OFF}</span>
+      <span class="layer-name">${label}</span>
+      <span class="layer-tag" style="background:rgba(13,153,255,.18);color:var(--accent-hi)">RING</span>
+      <span class="layer-tag" title="Thickness (mm)">${(thick ?? 0).toFixed(1)}</span>
+    </div>`;
+  };
+  let stampHtml = `<div class="layer-item layer-item--stamp${stampActive}" data-stamp="shape">
+      <span class="layer-vis" title="Stamp outline">${ICO_EYE_ON}</span>
+      <span class="layer-name">Stamp outline (${cfg.shape || 'circle'})</span>
+      <span class="layer-tag" style="background:rgba(255,180,60,.18);color:#ffb43c">SHAPE</span>
+    </div>`;
+  stampHtml += ringItem('outer', 'Ring 1 · outer', cfg.outerRingThickness);
+  if ((cfg.rings || 1) >= 2) stampHtml += ringItem('inner',  'Ring 2 · middle', cfg.innerRingThickness);
+  if ((cfg.rings || 1) >= 3) stampHtml += ringItem('inner2', 'Ring 3 · inner',  cfg.innerRing2Thickness);
+
+  list.innerHTML = stampHtml + cfg.layers.map(l =>
+    `<div class="layer-item${selectedIds.has(l.id) && !selShape ? ' active' : ''}" data-id="${l.id}">
       <span class="layer-vis" data-act="vis" title="Show/hide">${l.visible ? ICO_EYE_ON : ICO_EYE_OFF}</span>
       <span class="layer-name" title="Double-click to rename">${escapeHtml(l.name || autoLayerName(l))}</span>
       <span class="layer-tag">${l.type === 'shape' ? (l.shapeType || 'SHAPE').toUpperCase().slice(0,4) : l.type === 'image' ? 'IMG' : l.mode === 'curved' ? 'ARC' : 'LINE'}</span>
@@ -2509,6 +2530,27 @@ function buildLayerList() {
       <span class="layer-icon-btn" data-act="del" title="Delete">${ICO_DEL}</span>
     </div>`
   ).join('');
+
+  // Stamp/ring entries — click to open shape or ring editor
+  list.querySelectorAll('.layer-item[data-stamp]').forEach(item => {
+    item.addEventListener('click', e => {
+      const act = e.target.closest('[data-act]')?.dataset.act;
+      if (act === 'ring-vis') {
+        const key = e.target.closest('[data-ring]').dataset.ring;
+        cfg.ringVisible = cfg.ringVisible || {};
+        cfg.ringVisible[key] = !(cfg.ringVisible[key] !== false);
+        autoHist(); buildLayerList(); render();
+        return;
+      }
+      const target = item.dataset.stamp;
+      selId = null; selectedIds = new Set(); _showEffects = false;
+      selShape = true;
+      selRing = target === 'shape' ? null : target.replace('ring-', '');
+      buildLayerList();
+      renderLeftSidebar();
+      render();
+    });
+  });
 
   list.querySelectorAll('.layer-item').forEach(item => {
     const id = item.dataset.id;
