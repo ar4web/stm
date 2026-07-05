@@ -224,9 +224,9 @@ function ringChannelRadiusMm(channel = 'outer') {
 
 function defaultLayers() {
   return [
-    makeLayer({ name:'Shape', text:'شركة بصمة الموارد المحدودة', font:'Cairo',      dir:'rtl', weight:800, sizeMm:4.5, mode:'curved', flip:false, radiusMm:16,   startAngle:200, endAngle:340 }),
-    makeLayer({ name:'Shape', text:'LIMITED RESOURCE STAMP CO.', font:'Arial',      dir:'ltr', weight:700, sizeMm:3.8, mode:'curved', flip:true,  radiusMm:15.8, startAngle:145, endAngle:35, letterSpacing:1.5 }),
-    makeLayer({ name:'Shape', text:'1234567890',                font:'Arial',      weight:900, sizeMm:3.2, mode:'straight', offsetYmm:0 }),
+    makeLayer({ name:'Shape', text:'شركة بصمة الموارد المحدودة', font:'Noto Sans Arabic',      dir:'rtl', weight:800, sizeMm:4.5, mode:'curved', flip:false, radiusMm:16,   startAngle:200, endAngle:340 }),
+    makeLayer({ name:'Shape', text:'LIMITED RESOURCE STAMP CO.', font:'Noto Sans',      dir:'ltr', weight:700, sizeMm:3.8, mode:'curved', flip:true,  radiusMm:15.8, startAngle:145, endAngle:35, letterSpacing:1.5 }),
+    makeLayer({ name:'Shape', text:'1234567890',                font:'Noto Sans',      weight:900, sizeMm:3.2, mode:'straight', offsetYmm:0 }),
   ];
 }
 
@@ -257,20 +257,20 @@ const TEMPLATES = {
 function templateLayers(name) {
   if (name === 'rectangle') {
     return [
-      makeLayer({ name:'Shape', text:'COMPANY NAME',    font:'Montserrat', weight:900, sizeMm:4,   letterSpacing:1.5, mode:'straight', offsetYmm:-7 }),
-      makeLayer({ name:'Shape', text:'City · Country',  font:'Montserrat', sizeMm:3,   mode:'straight', offsetYmm:0  }),
-      makeLayer({ name:'Shape', text:'info@company.com',font:'Montserrat', sizeMm:2.8, mode:'straight', offsetYmm:7  }),
+      makeLayer({ name:'Shape', text:'COMPANY NAME',    font:'Noto Sans', weight:900, sizeMm:4,   letterSpacing:1.5, mode:'straight', offsetYmm:-7 }),
+      makeLayer({ name:'Shape', text:'City · Country',  font:'Noto Sans', sizeMm:3,   mode:'straight', offsetYmm:0  }),
+      makeLayer({ name:'Shape', text:'info@company.com',font:'Noto Sans', sizeMm:2.8, mode:'straight', offsetYmm:7  }),
     ];
   }
   if (name === 'square') {
     return [
-      makeLayer({ name:'Shape', text:'APPROVED',   font:'Montserrat', weight:900, sizeMm:4.5, letterSpacing:1, mode:'straight', offsetYmm:-3 }),
-      makeLayer({ name:'Shape', text:'موافق عليه', font:'Cairo',      dir:'rtl',  sizeMm:3.5, mode:'straight', offsetYmm:5  }),
+      makeLayer({ name:'Shape', text:'APPROVED',   font:'Noto Sans', weight:900, sizeMm:4.5, letterSpacing:1, mode:'straight', offsetYmm:-3 }),
+      makeLayer({ name:'Shape', text:'موافق عليه', font:'Noto Sans Arabic',      dir:'rtl',  sizeMm:3.5, mode:'straight', offsetYmm:5  }),
     ];
   }
   if (name === 'minimalCircle') {
     return [
-      makeLayer({ name:'Shape', text:'COMPANY NAME', font:'Montserrat', weight:800, sizeMm:3.2, letterSpacing:2, mode:'curved', flip:false, radiusMm:14, startAngle:210, endAngle:330 }),
+      makeLayer({ name:'Shape', text:'COMPANY NAME', font:'Noto Sans', weight:800, sizeMm:3.2, letterSpacing:2, mode:'curved', flip:false, radiusMm:14, startAngle:210, endAngle:330 }),
       makeLayer({ name:'Shape', text:'CN',           font:'Playfair Display', weight:800, sizeMm:7, mode:'straight' }),
     ];
   }
@@ -280,11 +280,11 @@ function templateLayers(name) {
   if (name === 'standardCircle') { ls[0].radiusMm=15; ls[1].radiusMm=14.8; }
   if (name === 'saudiCorporate') {
     return [
-      makeLayer({ name:'Shape', text:'بصمة التاسعة المحدودة', font:'Cairo', weight:800, dir:'rtl', sizeMm:4.5, letterSpacing:0.8, mode:'curved', flip:false, radiusMm:27, startAngle:200, endAngle:340 }),
-      makeLayer({ name:'Shape', text:'ب.ت. ٩٠٥٢٣٣٠٧٧', font:'Cairo', weight:800, dir:'rtl', sizeMm:3.8, letterSpacing:0.5, mode:'curved', flip:true, radiusMm:26.5, startAngle:200, endAngle:340 }),
-      makeLayer({ name:'Shape', text:'★', font:'Montserrat', weight:700, sizeMm:3.5, mode:'straight', offsetXmm:-17, offsetYmm:0 }),
-      makeLayer({ name:'Shape', text:'★', font:'Montserrat', weight:700, sizeMm:3.5, mode:'straight', offsetXmm:17, offsetYmm:0 }),
-      makeLayer({ name:'Shape', text:'✪', font:'Montserrat', weight:900, sizeMm:10, mode:'straight', offsetXmm:0, offsetYmm:0 }),
+      makeLayer({ name:'Shape', text:'بصمة التاسعة المحدودة', font:'Noto Sans Arabic', weight:800, dir:'rtl', sizeMm:4.5, letterSpacing:0.8, mode:'curved', flip:false, radiusMm:27, startAngle:200, endAngle:340 }),
+      makeLayer({ name:'Shape', text:'ب.ت. ٩٠٥٢٣٣٠٧٧', font:'Noto Sans Arabic', weight:800, dir:'rtl', sizeMm:3.8, letterSpacing:0.5, mode:'curved', flip:true, radiusMm:26.5, startAngle:200, endAngle:340 }),
+      makeLayer({ name:'Shape', text:'★', font:'Noto Sans', weight:700, sizeMm:3.5, mode:'straight', offsetXmm:-17, offsetYmm:0 }),
+      makeLayer({ name:'Shape', text:'★', font:'Noto Sans', weight:700, sizeMm:3.5, mode:'straight', offsetXmm:17, offsetYmm:0 }),
+      makeLayer({ name:'Shape', text:'✪', font:'Noto Sans', weight:900, sizeMm:10, mode:'straight', offsetXmm:0, offsetYmm:0 }),
     ];
   }
   return ls;
@@ -2916,7 +2916,7 @@ function initShapePicker() {
   const btn = document.getElementById('addShape');
   if (!btn) return;
   btn.addEventListener('click', () => {
-    const l = makeLayer({ name:'Shape', text:'★', font:'Montserrat', sizeMm:5, mode:'straight', offsetXmm:0, offsetYmm:0 });
+    const l = makeLayer({ name:'Shape', text:'★', font:'Noto Sans', sizeMm:5, mode:'straight', offsetXmm:0, offsetYmm:0 });
     cfg.layers.push(l);
     selId = l.id; selectedIds = new Set([selId]);
     selShape = false; selRing = null;
@@ -3323,7 +3323,7 @@ function initShapeZone() {
     item.addEventListener('click', () => {
       const type = item.dataset.addShape;
       const sym = SHAPE_SYMBOLS[type] || '●';
-      const l = makeLayer({ name:'Shape', text: sym, font:'Montserrat', sizeMm:5, mode:'straight', offsetXmm:0, offsetYmm:0 });
+      const l = makeLayer({ name:'Shape', text: sym, font:'Noto Sans', sizeMm:5, mode:'straight', offsetXmm:0, offsetYmm:0 });
       cfg.layers.push(l);
       selId = l.id; selectedIds = new Set([selId]);
       selShape = false; selRing = null;
@@ -3354,7 +3354,7 @@ function initShapeZone() {
     const cy = canvas.height / 2;
     const dxMm = (e.clientX - rect.left - rect.width / 2) * (canvas.width / rect.width) / (DPI_CURRENT / 25.4);
     const dyMm = (e.clientY - rect.top - rect.height / 2) * (canvas.height / rect.height) / (DPI_CURRENT / 25.4);
-    const l = makeLayer({ name:'Shape', text: sym, font:'Montserrat', sizeMm:5, mode:'straight', offsetXmm: Math.round(dxMm * 10) / 10, offsetYmm: Math.round(dyMm * 10) / 10 });
+    const l = makeLayer({ name:'Shape', text: sym, font:'Noto Sans', sizeMm:5, mode:'straight', offsetXmm: Math.round(dxMm * 10) / 10, offsetYmm: Math.round(dyMm * 10) / 10 });
     cfg.layers.push(l);
     selId = l.id; selectedIds = new Set([selId]);
     selShape = false; selRing = null;
