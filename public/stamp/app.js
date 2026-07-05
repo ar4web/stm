@@ -2552,7 +2552,7 @@ function buildLayerList() {
     });
   });
 
-  list.querySelectorAll('.layer-item').forEach(item => {
+  list.querySelectorAll('.layer-item:not([data-stamp])').forEach(item => {
     const id = item.dataset.id;
     item.addEventListener('click', e => {
       const act = e.target.closest('[data-act]')?.dataset.act;
