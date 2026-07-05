@@ -126,30 +126,24 @@ function showToast(msg) {
    FONTS
    ================================================================ */
 const FONTS = [
-  { group: 'Saudi Corporate (Arabic)', items: ['Cairo','Tajawal','Noto Sans Arabic'] },
-  { group: 'Formal Arabic',            items: ['Almarai','Amiri','Noto Naskh Arabic','Noto Kufi Arabic','IBM Plex Arabic'] },
-  { group: 'Latin / English',          items: ['Arial','Inter','Montserrat','Roboto','Poppins'] },
-  { group: 'CJK / Indic / Universal',  items: ['Noto Sans','Noto Sans SC','Noto Sans JP','Noto Sans Devanagari'] },
+  { group: 'Universal (all languages)', items: ['Noto Sans','Noto Serif'] },
+  { group: 'Arabic',                    items: ['Noto Sans Arabic','Noto Naskh Arabic','Noto Kufi Arabic'] },
+  { group: 'CJK',                       items: ['Noto Sans SC','Noto Sans JP','Noto Sans KR'] },
+  { group: 'Indic / Other scripts',     items: ['Noto Sans Devanagari','Noto Sans Thai','Noto Sans Hebrew'] },
 ];
 
 const FONT_WEIGHTS = {
-  'Cairo':            [200,300,400,500,600,700,800,900],
-  'Tajawal':          [200,300,400,500,700,800,900],
-  'Noto Sans Arabic': [100,200,300,400,500,600,700,800,900],
-  'Almarai':          [400,600,700,800],
-  'Amiri':            [400,700],
-  'Noto Naskh Arabic':[400,500,600,700],
-  'Noto Kufi Arabic': [400,500,700,800,900],
-  'IBM Plex Arabic':  [300,400,500,600,700],
-  'Arial':            [400,700,900],
-  'Inter':            [100,200,300,400,500,600,700,800,900],
-  'Montserrat':       [100,200,300,400,500,600,700,800,900],
-  'Roboto':           [100,200,300,400,500,600,700,800,900],
-  'Poppins':          [100,200,300,400,500,600,700,800,900],
-  'Noto Sans':        [100,200,300,400,500,600,700,800,900],
-  'Noto Sans SC':     [100,200,300,400,500,600,700,800,900],
-  'Noto Sans JP':     [100,200,300,400,500,600,700,800,900],
+  'Noto Sans':            [100,200,300,400,500,600,700,800,900],
+  'Noto Serif':           [100,200,300,400,500,600,700,800,900],
+  'Noto Sans Arabic':     [100,200,300,400,500,600,700,800,900],
+  'Noto Naskh Arabic':    [400,500,600,700],
+  'Noto Kufi Arabic':     [400,500,700,800,900],
+  'Noto Sans SC':         [100,200,300,400,500,600,700,800,900],
+  'Noto Sans JP':         [100,200,300,400,500,600,700,800,900],
+  'Noto Sans KR':         [100,200,300,400,500,600,700,800,900],
   'Noto Sans Devanagari': [100,200,300,400,500,600,700,800,900],
+  'Noto Sans Thai':       [100,200,300,400,500,600,700,800,900],
+  'Noto Sans Hebrew':     [100,200,300,400,500,600,700,800,900],
 };
 
 function safeWeight(font, weight) {
