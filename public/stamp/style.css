@@ -731,6 +731,11 @@ input[type=text], input[type=number]{
 }
 .layer-item button:hover,
 .layer-item .layer-btn:hover{ background:var(--bg-hover); color:var(--text); }
+.layer-item--stamp{ border-bottom:1px dashed var(--border); border-radius:var(--r-sm) var(--r-sm) 0 0; }
+.layer-item--ring .layer-tag{ font-size:10px; padding:1px 5px; }
+.layer-item--stamp + .layer-item--ring,
+.layer-item--ring + .layer-item--ring{ margin-top:-1px; }
+.layer-item--ring + :not(.layer-item--ring){ margin-top:6px; border-top:1px dashed var(--border); padding-top:6px; }
 
 /* ═══════════════════ CONTEXT (text/shape props panels) ═══════════════════ */
 textarea{
