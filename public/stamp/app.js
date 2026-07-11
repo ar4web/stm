@@ -3102,35 +3102,49 @@ function initExportDropdown() {
   const menu = document.getElementById('exportMenu');
   if (!dropdown || !menu) return;
 
+  const closeMenu = () => {
+    menu.style.display = 'none';
+    dropdown.classList.remove('open');
+  };
+
   dropdown.addEventListener('click', (e) => {
     e.stopPropagation();
     const open = menu.style.display !== 'none';
     menu.style.display = open ? 'none' : 'block';
     dropdown.classList.toggle('open', !open);
+    if (!open) renderPresetsList();
   });
 
-  menu.querySelector('[data-action="pngTransparent"]').addEventListener('click', () => {
-    exportPNG(false);
-    menu.style.display = 'none';
-    dropdown.classList.remove('open');
-  });
-  menu.querySelector('[data-action="pngWhite"]').addEventListener('click', () => {
-    exportPNG(true);
-    menu.style.display = 'none';
-    dropdown.classList.remove('open');
-  });
-  menu.querySelector('[data-action="svgExport"]').addEventListener('click', () => {
-    exportSVG();
-    menu.style.display = 'none';
-    dropdown.classList.remove('open');
-  });
+  const bind = (action, fn) => {
+    const el = menu.querySelector(`[data-action="${action}"]`);
+    if (el) el.addEventListener('click', () => { fn(); closeMenu(); });
+  };
 
-  document.addEventListener('click', () => {
-    menu.style.display = 'none';
-    dropdown.classList.remove('open');
+  bind('saveProject', () => { saveState(); showToast('Saved'); });
+  bind('save', () => {
+    const name = prompt('Preset name:', cfg.template + ' preset');
+    if (name && name.trim()) savePreset(name.trim());
   });
+  bind('exportConfig', () => exportConfigJSON());
+  bind('importConfig', () => document.getElementById('importConfigFile')?.click());
+  bind('manage', () => { /* future: manage dialog */ showToast('Use the × on each preset to delete'); });
+  bind('pngTransparent', () => exportPNG(false));
+  bind('pngWhite', () => exportPNG(true));
+  bind('svgExport', () => exportSVG());
+
+  const importFile = document.getElementById('importConfigFile');
+  if (importFile && !importFile._wired) {
+    importFile._wired = true;
+    importFile.addEventListener('change', (e) => {
+      if (e.target.files[0]) importConfigJSON(e.target.files[0]);
+      e.target.value = '';
+    });
+  }
+
+  document.addEventListener('click', closeMenu);
   menu.addEventListener('click', e => e.stopPropagation());
 }
+
 
 /* ================================================================
    CONFIG EXPORT / IMPORT (JSON)

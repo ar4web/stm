@@ -348,14 +348,15 @@ h1,h2,h3,h4,h5,.prop-label,.rep-title,.logo-text,.ts-head-label,.ls-zone-title,.
   position:relative;
   background:var(--grad-panel);
   backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
   border-right:1px solid var(--border);
-  overflow:hidden;
+  overflow:visible;
   transition:width .25s cubic-bezier(.4,0,.2,1);
 }
+.tool-rail-panel-inner{ overflow-x:hidden; }
 .work-area.sidebar-collapsed .tool-rail-panel{
   width:0; border-right:none;
 }
+
 .tool-rail-panel-inner{
   height:100%;
   overflow-y:auto;
