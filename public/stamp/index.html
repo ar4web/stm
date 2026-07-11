@@ -66,17 +66,30 @@
         <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a5 5 0 1 0 1.5-3.5L3 6"/><path d="M3 3v3h3"/></svg>
       </button>
       <div class="tb-sep"></div>
-      <div class="tb-presets" id="tbPresets">
-        <button class="tb-btn-ghost" id="presetsDropdown" title="File / Presets">
-          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7l3 3v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M9 3v4h4"/></svg>
-          <span>File</span>
+
+      <!-- History cluster (moved to right) -->
+      <button class="tb-icon" id="undoBtn" title="Undo (Ctrl+Z)">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l-3-3 3-3"/><path d="M5 12h6a3 3 0 0 0 0-6H4"/></svg>
+      </button>
+      <button class="tb-icon" id="redoBtn" title="Redo (Ctrl+Y)">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10l3-3-3-3"/><path d="M11 12H5a3 3 0 0 1 0-6h7"/></svg>
+      </button>
+      <div class="tb-sep"></div>
+
+      <!-- Merged File / Save / Export dropdown -->
+      <div class="tb-presets" id="tbExport">
+        <button class="tb-menubtn tb-menubtn--primary" id="exportDropdown" title="File · Save · Export">
+          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 2v8M5 7l3 3 3-3M2 13h12"/></svg>
+          <span>Export</span>
           <svg viewBox="0 0 10 10" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2.5 3.5l2.5 2.5 2.5-2.5"/></svg>
         </button>
-        <div class="tb-dropdown-menu" id="presetsMenu" style="display:none">
-          <div class="tb-preset-item" data-action="save">+ Save Current as Preset</div>
-          <div class="tb-preset-sep"></div>
-          <div id="presetsList"></div>
-          <div class="tb-preset-sep"></div>
+        <div class="tb-dropdown-menu" id="exportMenu" style="display:none;right:0;left:auto;min-width:240px">
+          <div class="tb-preset-label" style="padding:8px 12px 4px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)">File</div>
+          <div class="tb-preset-item" data-action="saveProject">
+            <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M13 14H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h7l3 3v9a1 1 0 0 1-1 1z"/><path d="M9 2v3h3"/></svg>
+            Save (Ctrl+S)
+          </div>
+          <div class="tb-preset-item" data-action="save">+ Save Current as Preset…</div>
           <div class="tb-preset-item" data-action="exportConfig">
             <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 12h8M8 2v8M5 7l3-3 3 3"/></svg>
             Export Config (.json)
@@ -86,25 +99,16 @@
             Import Config (.json)
           </div>
           <div class="tb-preset-sep"></div>
+          <div class="tb-preset-label" style="padding:6px 12px 2px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)">Presets</div>
+          <div id="presetsList" style="max-height:180px;overflow-y:auto"></div>
           <div class="tb-preset-item" data-action="manage">Manage Presets…</div>
-        </div>
-      </div>
-      <button class="tb-btn-ghost" id="saveBtn" title="Save (Ctrl+S)">
-        <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M13 14H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h7l3 3v9a1 1 0 0 1-1 1z"/><path d="M9 2v3h3M5 10h6M5 13h6"/></svg>
-        Save
-      </button>
-      <div class="tb-presets" id="tbExport">
-        <button class="tb-menubtn" id="exportDropdown" title="Export">
-          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 2v8M5 7l3 3 3-3M2 13h12"/></svg>
-          <span>Export</span>
-          <svg viewBox="0 0 10 10" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2.5 3.5l2.5 2.5 2.5-2.5"/></svg>
-        </button>
-        <div class="tb-dropdown-menu" id="exportMenu" style="display:none;right:0;left:auto;">
+          <div class="tb-preset-sep"></div>
+          <div class="tb-preset-label" style="padding:6px 12px 2px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)">Export image</div>
           <div class="tb-preset-item" data-action="pngTransparent">PNG · Transparent</div>
           <div class="tb-preset-item" data-action="pngWhite">PNG · White BG</div>
           <div class="tb-preset-item" data-action="svgExport">SVG · Vector</div>
           <div class="tb-preset-sep"></div>
-          <div class="tb-preset-label" style="padding:6px 12px 2px;font-size:11px;color:var(--text-dim);">Resolution</div>
+          <div class="tb-preset-label" style="padding:6px 12px 2px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)">Resolution</div>
           <div class="tb-preset-item" style="padding:4px 12px 10px">
             <select data-bind="dpi" id="dpiSelect" class="select-control" style="width:100%">
               <option value="72">72 DPI · screen</option>
@@ -116,7 +120,18 @@
           </div>
         </div>
       </div>
+
+      <!-- Right editor panel toggle -->
+      <button class="tb-icon" id="rightPanelToggle" title="Toggle editor panel (])" aria-pressed="true">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.2"/><path d="M10 3v10"/></svg>
+      </button>
+
+      <!-- Hidden legacy hooks (kept so app.js wiring stays safe) -->
+      <button id="saveBtn" hidden aria-hidden="true"></button>
+      <button id="presetsDropdown" hidden aria-hidden="true"></button>
+      <div id="presetsMenu" hidden aria-hidden="true"></div>
     </div>
+
   </header>
 
   <!-- ═══════════════════ WORK AREA ═══════════════════ -->
