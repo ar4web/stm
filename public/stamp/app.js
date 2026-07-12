@@ -3052,7 +3052,8 @@ function initPresets() {
   });
 
   // Save action
-  menu.querySelector('[data-action="save"]').addEventListener('click', () => {
+  const saveEl = menu.querySelector('[data-action="save"]');
+  if (saveEl) saveEl.addEventListener('click', () => {
     const name = prompt('Preset name:', cfg.template + ' preset');
     if (name && name.trim()) {
       savePreset(name.trim());
@@ -3060,6 +3061,7 @@ function initPresets() {
       dropdown.classList.remove('open');
     }
   });
+
 
   // Export Config
   const exportConfigEl = menu.querySelector('[data-action="exportConfig"]');
