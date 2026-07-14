@@ -7,6 +7,7 @@ Design round, oval, rectangular, and custom stamps entirely in the browser — n
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Made with TanStack Start](https://img.shields.io/badge/built%20with-TanStack%20Start-6366F1)
 ![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-ar4web.github.io%2FASM-6366F1)](https://ar4web.github.io/ASM/)
 
 ## ✨ Features
 
@@ -32,8 +33,8 @@ Open `public/stamp/index.html` in any modern browser — the editor is a fully s
 Requirements: [Bun](https://bun.sh) ≥ 1.1 (or Node ≥ 20).
 
 ```bash
-git clone https://github.com/<your-username>/<repo>.git
-cd <repo>
+git clone https://github.com/ar4web/stamp-studio.git
+cd stamp-studio
 bun install
 bun run dev
 ```
@@ -77,7 +78,9 @@ Good first issues:
 
 ## 📸 Screenshots
 
-Add screenshots or a short GIF here after your next build — the "live demo" link and a hero image dramatically improve first impressions.
+![Stamp Studio editor](./assets/screenshot.png)
+
+▶ **[Live demo — ar4web.github.io/ASM](https://ar4web.github.io/ASM/)**
 
 ## 📄 License
 
