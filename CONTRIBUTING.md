@@ -33,6 +33,15 @@ Most logic lives in `public/stamp/app.js`. UI text and structure live in `public
 - Add PDF export
 - Translate the UI
 
+## Codex / AI-assisted PRs
+
+This project welcomes AI-assisted contributions (including OpenAI Codex, OpenCode, Cline, and similar tools). If you open a PR generated or assisted by an agent:
+
+- Keep the standalone editor in `public/stamp/` self-contained (no build step required to run it).
+- Run `npx prettier --write .` so diffs stay clean (LF line endings).
+- Make sure `bun run build` and `bun run lint` pass before opening the PR.
+- Add a short note in the PR description describing what the agent changed and how you verified it.
+
 ## Code of Conduct
 
 Be respectful. Assume good intent. File issues with repro steps. That's it.
