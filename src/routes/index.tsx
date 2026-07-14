@@ -4,7 +4,11 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Arshad Stamp Maker" },
-      { name: "description", content: "Design custom round, oval and rectangular stamps with curved Arabic and English text." },
+      {
+        name: "description",
+        content:
+          "Design custom round, oval and rectangular stamps with curved Arabic and English text.",
+      },
     ],
   }),
   component: Index,

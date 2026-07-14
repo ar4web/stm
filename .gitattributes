@@ -1,0 +1,9 @@
+# Enforce LF line endings so Prettier/ESLint stay clean across platforms
+* text=auto eol=lf
+
+# Binary assets
+*.png binary
+*.svg text
+*.jpg binary
+*.woff binary
+*.woff2 binary

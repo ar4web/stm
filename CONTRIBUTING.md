@@ -27,13 +27,13 @@ The dev server runs at `http://localhost:8080`. The stamp editor itself is a sta
 
 Useful scripts:
 
-| Command | What it does |
-| --- | --- |
-| `bun run dev` | Start Vite dev server with HMR |
-| `bun run build` | Production build |
+| Command             | What it does                               |
+| ------------------- | ------------------------------------------ |
+| `bun run dev`       | Start Vite dev server with HMR             |
+| `bun run build`     | Production build                           |
 | `bun run build:dev` | Development-mode build (used by CI checks) |
-| `bun run lint` | Run ESLint |
-| `bun run format` | Format with Prettier |
+| `bun run lint`      | Run ESLint                                 |
+| `bun run format`    | Format with Prettier                       |
 
 ## Project structure
 

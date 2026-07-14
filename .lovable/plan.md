@@ -20,7 +20,7 @@ Section layout (top → bottom):
 - **Stamp Shape** — chips for Circle, Double Ring, Triple Ring, Oval, Rectangle, Square, Minimal, Saudi CO. (the `STAMP_TEMPLATES` presets). Clicking applies preset without dropping existing text/shape layers.
 - **Add** — Add Curved Text, Add Straight Text, Add Shape, Add Image, Add Logo.
 - **Layers** — compact list of current layers; click to select, double-click to rename, drag to reorder, eye toggle for visibility, lock toggle, trash to delete.
-- **Properties** *(only mounted when a layer is selected)* — context editor for that layer (text/shape/image fields, channel snap for curved text, per-layer color with "Use ink" reset, flip, alignment).
+- **Properties** _(only mounted when a layer is selected)_ — context editor for that layer (text/shape/image fields, channel snap for curved text, per-layer color with "Use ink" reset, flip, alignment).
 - **Rings** — outer / middle / inner thickness + per-ring color swatches, ring-gap, center-area size.
 - **Global** — ink color, paper size, background toggle.
 - **Export** — PNG, SVG, PDF buttons.

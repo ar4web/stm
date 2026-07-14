@@ -10,6 +10,7 @@ A clear and concise description of what the bug is.
 
 **To reproduce**
 Steps to reproduce the behavior:
+
 1. Go to '...'
 2. Click on '...'
 3. See error
@@ -21,6 +22,7 @@ What you expected to happen.
 If applicable, add screenshots.
 
 **Environment**
+
 - OS: [e.g. Windows 11, macOS 14]
 - Browser: [e.g. Chrome 120, Firefox 121]
 - App version / commit: [e.g. main @ abc1234]

@@ -1,305 +1,762 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Arshad Stamp Studio</title>
-  <link rel="icon" type="image/svg+xml" href="logo.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Noto+Sans:wght@100;200;300;400;500;600;700;800;900&family=Noto+Serif:wght@100;200;300;400;500;600;700;800;900&family=Noto+Sans+Arabic:wght@100;200;300;400;500;600;700;800;900&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;700;800;900&family=Noto+Sans+SC:wght@100;300;400;500;700;900&family=Noto+Sans+JP:wght@100;300;400;500;700;900&family=Noto+Sans+KR:wght@100;300;400;500;700;900&family=Noto+Sans+Devanagari:wght@100;300;400;500;700;900&family=Noto+Sans+Thai:wght@100;300;400;500;700;900&family=Noto+Sans+Hebrew:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div class="app-shell">
-
-  <!-- ═══════════════════ TOP BAR ═══════════════════ -->
-  <header class="topbar">
-    <div class="tb-section tb-left">
-      <img src="logo.svg" alt="" class="logo-img">
-      <span class="logo-text">Stamp&nbsp;Studio</span>
-    </div>
-
-    <div class="tb-sep"></div>
-
-    <input type="file" id="importConfigFile" accept=".json" style="display:none">
-
-    <!-- (Undo/Redo/Panel toggle moved to the right cluster) -->
-
-
-
-    <!-- Shape icons (draggable to canvas) -->
-    <div class="tb-section tb-shapes" id="tbShapeBar">
-      <div class="ls-zone-grid" id="lsShapeGrid">
-        <div class="ls-zone-item" data-add-shape="star" title="Star" draggable="true">★</div>
-        <div class="ls-zone-item" data-add-shape="pentagon" title="Pentagon" draggable="true">⬠</div>
-        <div class="ls-zone-item" data-add-shape="hexagon" title="Hexagon" draggable="true">⬡</div>
-        <div class="ls-zone-item" data-add-shape="diamond" title="Diamond" draggable="true">◆</div>
-        <div class="ls-zone-item" data-add-shape="cross" title="Cross" draggable="true">✚</div>
-        <div class="ls-zone-item" data-add-shape="circle" title="Circle" draggable="true">●</div>
-      </div>
-    </div>
-
-    <div class="tb-sep"></div>
-
-    <!-- Color + Effects in topbar -->
-    <div class="tb-center-controls">
-      <div class="tb-color-group">
-        <div class="tb-swatches" id="swatchRow"></div>
-        <div class="tb-color-combo">
-          <span class="tb-color-hex" id="inkColorHex">#1e3a8a</span>
-          <input type="color" id="inkColorPicker" title="Color picker" class="tb-colorpicker-hidden" data-bind="inkColor" value="#1e3a8a">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arshad Stamp Studio</title>
+    <link rel="icon" type="image/svg+xml" href="logo.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Noto+Sans:wght@100;200;300;400;500;600;700;800;900&family=Noto+Serif:wght@100;200;300;400;500;600;700;800;900&family=Noto+Sans+Arabic:wght@100;200;300;400;500;600;700;800;900&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Kufi+Arabic:wght@400;500;700;800;900&family=Noto+Sans+SC:wght@100;300;400;500;700;900&family=Noto+Sans+JP:wght@100;300;400;500;700;900&family=Noto+Sans+KR:wght@100;300;400;500;700;900&family=Noto+Sans+Devanagari:wght@100;300;400;500;700;900&family=Noto+Sans+Thai:wght@100;300;400;500;700;900&family=Noto+Sans+Hebrew:wght@100;300;400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <!-- ═══════════════════ TOP BAR ═══════════════════ -->
+      <header class="topbar">
+        <div class="tb-section tb-left">
+          <img src="logo.svg" alt="" class="logo-img" />
+          <span class="logo-text">Stamp&nbsp;Studio</span>
         </div>
-      </div>
-      <div class="tb-effects-group">
-        <label class="tb-eff-toggle"><input type="checkbox" data-eff="inkBleed"> <span>Bleed</span></label>
-        <label class="tb-eff-toggle"><input type="checkbox" data-eff="grungeTexture"> <span>Grunge</span></label>
-        <label class="tb-eff-toggle"><input type="checkbox" data-eff="rotationJitter"> <span>Jitter</span></label>
-      </div>
-    </div>
 
-    <div class="tb-section tb-right">
-      <button class="tb-icon" id="helpBtn" title="Shortcuts (?)">
-        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M6.3 6.2a1.7 1.7 0 0 1 3.4 0c0 1.2-1.7 1.4-1.7 2.6"/><circle cx="8" cy="11.3" r=".5" fill="currentColor"/></svg>
-      </button>
-      <button class="tb-icon tb-icon--danger" id="resetBtn" title="Reset everything">
-        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a5 5 0 1 0 1.5-3.5L3 6"/><path d="M3 3v3h3"/></svg>
-      </button>
-      <div class="tb-sep"></div>
+        <div class="tb-sep"></div>
 
-      <!-- History cluster (moved to right) -->
-      <button class="tb-icon" id="undoBtn" title="Undo (Ctrl+Z)">
-        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l-3-3 3-3"/><path d="M5 12h6a3 3 0 0 0 0-6H4"/></svg>
-      </button>
-      <button class="tb-icon" id="redoBtn" title="Redo (Ctrl+Y)">
-        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10l3-3-3-3"/><path d="M11 12H5a3 3 0 0 1 0-6h7"/></svg>
-      </button>
-      <div class="tb-sep"></div>
+        <input type="file" id="importConfigFile" accept=".json" style="display: none" />
 
-      <!-- Merged File / Save / Export dropdown -->
-      <div class="tb-presets" id="tbExport">
-        <button class="tb-menubtn tb-menubtn--primary" id="exportDropdown" title="File · Save · Export">
-          <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 2v8M5 7l3 3 3-3M2 13h12"/></svg>
-          <span>Export</span>
-          <svg viewBox="0 0 10 10" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2.5 3.5l2.5 2.5 2.5-2.5"/></svg>
-        </button>
-        <div class="tb-dropdown-menu" id="exportMenu" style="display:none;right:0;left:auto;min-width:240px">
-          <div class="tb-preset-label" style="padding:8px 12px 4px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)">File</div>
-          <div class="tb-preset-item" data-action="saveProject">
-            <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M13 14H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h7l3 3v9a1 1 0 0 1-1 1z"/><path d="M9 2v3h3"/></svg>
-            Save (Ctrl+S)
-          </div>
-          <div class="tb-preset-item" data-action="save">+ Save Current as Preset…</div>
-          <div class="tb-preset-item" data-action="exportConfig">
-            <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 12h8M8 2v8M5 7l3-3 3 3"/></svg>
-            Export Config (.json)
-          </div>
-          <div class="tb-preset-item" data-action="importConfig">
-            <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 12h8M8 14V6M5 9l3 3 3-3"/></svg>
-            Import Config (.json)
-          </div>
-          <div class="tb-preset-sep"></div>
-          <div class="tb-preset-label" style="padding:6px 12px 2px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)">Presets</div>
-          <div id="presetsList" style="max-height:180px;overflow-y:auto"></div>
-          <div class="tb-preset-item" data-action="manage">Manage Presets…</div>
-          <div class="tb-preset-sep"></div>
-          <div class="tb-preset-label" style="padding:6px 12px 2px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)">Export image</div>
-          <div class="tb-preset-item" data-action="pngTransparent">PNG · Transparent</div>
-          <div class="tb-preset-item" data-action="pngWhite">PNG · White BG</div>
-          <div class="tb-preset-item" data-action="svgExport">SVG · Vector</div>
-          <div class="tb-preset-sep"></div>
-          <div class="tb-preset-label" style="padding:6px 12px 2px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim)">Resolution</div>
-          <div class="tb-preset-item" style="padding:4px 12px 10px">
-            <select data-bind="dpi" id="dpiSelect" class="select-control" style="width:100%">
-              <option value="72">72 DPI · screen</option>
-              <option value="150">150 DPI · web</option>
-              <option value="300" selected>300 DPI · print</option>
-              <option value="600">600 DPI · high quality</option>
-              <option value="1200">1200 DPI · max</option>
-            </select>
+        <!-- (Undo/Redo/Panel toggle moved to the right cluster) -->
+
+        <!-- Shape icons (draggable to canvas) -->
+        <div class="tb-section tb-shapes" id="tbShapeBar">
+          <div class="ls-zone-grid" id="lsShapeGrid">
+            <div class="ls-zone-item" data-add-shape="star" title="Star" draggable="true">★</div>
+            <div class="ls-zone-item" data-add-shape="pentagon" title="Pentagon" draggable="true">
+              ⬠
+            </div>
+            <div class="ls-zone-item" data-add-shape="hexagon" title="Hexagon" draggable="true">
+              ⬡
+            </div>
+            <div class="ls-zone-item" data-add-shape="diamond" title="Diamond" draggable="true">
+              ◆
+            </div>
+            <div class="ls-zone-item" data-add-shape="cross" title="Cross" draggable="true">✚</div>
+            <div class="ls-zone-item" data-add-shape="circle" title="Circle" draggable="true">
+              ●
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Right editor panel toggle -->
-      <button class="tb-icon" id="rightPanelToggle" title="Toggle editor panel (])" aria-pressed="true">
-        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.2"/><path d="M10 3v10"/></svg>
-      </button>
+        <div class="tb-sep"></div>
 
-      <!-- Hidden legacy hooks (kept so app.js wiring stays safe) -->
-      <button id="saveBtn" hidden aria-hidden="true"></button>
-      <button id="presetsDropdown" hidden aria-hidden="true"></button>
-      <div id="presetsMenu" hidden aria-hidden="true"></div>
-    </div>
-
-  </header>
-
-  <!-- ═══════════════════ WORK AREA ═══════════════════ -->
-  <div class="work-area">
-
-    <!-- ─── UNIFIED TOOL RAIL ─── -->
-    <aside class="tool-rail-panel" id="toolRailPanel" aria-label="Tools">
-      <button class="tb-edge-toggle" id="sidebarToggle" title="Toggle sidebar ([)" aria-pressed="true">
-        <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.2"/><path d="M6 3v10"></path></svg>
-      </button>
-      <div class="tool-rail-panel-inner">
-
-      <!-- Layers -->
-      <div class="ts-section">
-        <div class="ts-head">
-          <span class="ts-head-label">
-            <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M7 2l5 3-5 3-5-3 5-3z"/><path d="M2 8l5 3 5-3"/></svg>
-            Layers
-          </span>
-          <svg class="ts-chevron" data-ts="layers" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
-        </div>
-        <div class="ts-body" data-ts-body="layers">
-          <div id="layerList" class="layer-list"></div>
-        </div>
-      </div>
-
-      <!-- Add Layer -->
-      <div class="ts-section">
-        <div class="ts-head">
-          <span class="ts-head-label">
-            <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7 3v8M3 7h8"/></svg>
-            Add more
-          </span>
-          <svg class="ts-chevron" data-ts="add" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
-        </div>
-        <div class="ts-body" data-ts-body="add">
-          <div class="tool-menu-list">
-            <button class="tool-menu-btn" id="addCurved">
-              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 11a6 6 0 0 1 12 0"/></svg>
-              <span>Curved Text</span>
-            </button>
-            <button class="tool-menu-btn" id="addLine">
-              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 8h12"/><path d="M4 5v6M12 5v6"/></svg>
-              <span>Straight Text</span>
-            </button>
-            <button class="tool-menu-btn" id="addShape">
-              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M8 2l1.8 3.6 4 .6-2.9 2.8.7 4L8 11l-3.6 2 .7-4L2.2 6.2l4-.6z"/></svg>
-              <span>Shape</span>
-            </button>
-            <button class="tool-menu-btn" id="importLogo">
-              <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1"/><circle cx="6" cy="7" r="1.2"/><path d="M2 11l3.5-3 3 2.5L11 8l3 3"/></svg>
-              <span>Logo / Image</span>
-            </button>
+        <!-- Color + Effects in topbar -->
+        <div class="tb-center-controls">
+          <div class="tb-color-group">
+            <div class="tb-swatches" id="swatchRow"></div>
+            <div class="tb-color-combo">
+              <span class="tb-color-hex" id="inkColorHex">#1e3a8a</span>
+              <input
+                type="color"
+                id="inkColorPicker"
+                title="Color picker"
+                class="tb-colorpicker-hidden"
+                data-bind="inkColor"
+                value="#1e3a8a"
+              />
+            </div>
+          </div>
+          <div class="tb-effects-group">
+            <label class="tb-eff-toggle"
+              ><input type="checkbox" data-eff="inkBleed" /> <span>Bleed</span></label
+            >
+            <label class="tb-eff-toggle"
+              ><input type="checkbox" data-eff="grungeTexture" /> <span>Grunge</span></label
+            >
+            <label class="tb-eff-toggle"
+              ><input type="checkbox" data-eff="rotationJitter" /> <span>Jitter</span></label
+            >
           </div>
         </div>
-      </div>
 
-      <!-- Stamp Shape presets -->
-      <div class="ts-section">
-        <div class="ts-head">
-          <span class="ts-head-label">
-            <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5.5"/></svg>
-            Stamp Templates
-          </span>
-          <svg class="ts-chevron" data-ts="stampShape" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5l3 3 3-3"/></svg>
-        </div>
-        <div class="ts-body" data-ts-body="stampShape">
-          <div class="ls-tpl-chips">
-            <button class="tpl-chip" data-template="doubleRing" title="Two concentric rings">
-              <svg viewBox="0 0 40 40" class="tpl-thumb"><circle cx="20" cy="20" r="17" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="20" cy="20" r="12" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+        <div class="tb-section tb-right">
+          <button class="tb-icon" id="helpBtn" title="Shortcuts (?)">
+            <svg
+              viewBox="0 0 16 16"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+            >
+              <circle cx="8" cy="8" r="6" />
+              <path d="M6.3 6.2a1.7 1.7 0 0 1 3.4 0c0 1.2-1.7 1.4-1.7 2.6" />
+              <circle cx="8" cy="11.3" r=".5" fill="currentColor" />
+            </svg>
+          </button>
+          <button class="tb-icon tb-icon--danger" id="resetBtn" title="Reset everything">
+            <svg
+              viewBox="0 0 16 16"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M3 8a5 5 0 1 0 1.5-3.5L3 6" />
+              <path d="M3 3v3h3" />
+            </svg>
+          </button>
+          <div class="tb-sep"></div>
+
+          <!-- History cluster (moved to right) -->
+          <button class="tb-icon" id="undoBtn" title="Undo (Ctrl+Z)">
+            <svg
+              viewBox="0 0 16 16"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M4 10l-3-3 3-3" />
+              <path d="M5 12h6a3 3 0 0 0 0-6H4" />
+            </svg>
+          </button>
+          <button class="tb-icon" id="redoBtn" title="Redo (Ctrl+Y)">
+            <svg
+              viewBox="0 0 16 16"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M12 10l3-3-3-3" />
+              <path d="M11 12H5a3 3 0 0 1 0-6h7" />
+            </svg>
+          </button>
+          <div class="tb-sep"></div>
+
+          <!-- Merged File / Save / Export dropdown -->
+          <div class="tb-presets" id="tbExport">
+            <button
+              class="tb-menubtn tb-menubtn--primary"
+              id="exportDropdown"
+              title="File · Save · Export"
+            >
+              <svg
+                viewBox="0 0 16 16"
+                width="13"
+                height="13"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+              >
+                <path d="M8 2v8M5 7l3 3 3-3M2 13h12" />
+              </svg>
+              <span>Export</span>
+              <svg
+                viewBox="0 0 10 10"
+                width="8"
+                height="8"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+              >
+                <path d="M2.5 3.5l2.5 2.5 2.5-2.5" />
+              </svg>
             </button>
-            <button class="tpl-chip" data-template="tripleRing" title="Three concentric rings">
-              <svg viewBox="0 0 40 40" class="tpl-thumb"><circle cx="20" cy="20" r="17" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="20" cy="20" r="12.5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="20" cy="20" r="8" fill="none" stroke="currentColor" stroke-width="1"/></svg>
-            </button>
-            <button class="tpl-chip" data-template="oval" title="Horizontal oval">
-              <svg viewBox="0 0 40 40" class="tpl-thumb"><ellipse cx="20" cy="20" rx="18" ry="11" fill="none" stroke="currentColor" stroke-width="2"/><ellipse cx="20" cy="20" rx="14" ry="7.5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
-            </button>
-            <button class="tpl-chip" data-template="rectangle" title="Rectangle">
-              <svg viewBox="0 0 40 40" class="tpl-thumb"><rect x="3" y="10" width="34" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="6" y="13" width="28" height="14" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
-            </button>
-            <button class="tpl-chip" data-template="square" title="Square">
-              <svg viewBox="0 0 40 40" class="tpl-thumb"><rect x="6" y="6" width="28" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-            </button>
-            <button class="tpl-chip" data-template="minimalCircle" title="Minimal thin ring">
-              <svg viewBox="0 0 40 40" class="tpl-thumb"><circle cx="20" cy="20" r="16" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
-            </button>
-                        
+            <div
+              class="tb-dropdown-menu"
+              id="exportMenu"
+              style="display: none; right: 0; left: auto; min-width: 240px"
+            >
+              <div
+                class="tb-preset-label"
+                style="
+                  padding: 8px 12px 4px;
+                  font-size: 10px;
+                  letter-spacing: 0.08em;
+                  text-transform: uppercase;
+                  color: var(--text-dim);
+                "
+              >
+                File
+              </div>
+              <div class="tb-preset-item" data-action="saveProject">
+                <svg
+                  viewBox="0 0 16 16"
+                  width="12"
+                  height="12"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                >
+                  <path d="M13 14H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h7l3 3v9a1 1 0 0 1-1 1z" />
+                  <path d="M9 2v3h3" />
+                </svg>
+                Save (Ctrl+S)
+              </div>
+              <div class="tb-preset-item" data-action="save">+ Save Current as Preset…</div>
+              <div class="tb-preset-item" data-action="exportConfig">
+                <svg
+                  viewBox="0 0 16 16"
+                  width="12"
+                  height="12"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                >
+                  <path d="M4 12h8M8 2v8M5 7l3-3 3 3" />
+                </svg>
+                Export Config (.json)
+              </div>
+              <div class="tb-preset-item" data-action="importConfig">
+                <svg
+                  viewBox="0 0 16 16"
+                  width="12"
+                  height="12"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                >
+                  <path d="M4 12h8M8 14V6M5 9l3 3 3-3" />
+                </svg>
+                Import Config (.json)
+              </div>
+              <div class="tb-preset-sep"></div>
+              <div
+                class="tb-preset-label"
+                style="
+                  padding: 6px 12px 2px;
+                  font-size: 10px;
+                  letter-spacing: 0.08em;
+                  text-transform: uppercase;
+                  color: var(--text-dim);
+                "
+              >
+                Presets
+              </div>
+              <div id="presetsList" style="max-height: 180px; overflow-y: auto"></div>
+              <div class="tb-preset-item" data-action="manage">Manage Presets…</div>
+              <div class="tb-preset-sep"></div>
+              <div
+                class="tb-preset-label"
+                style="
+                  padding: 6px 12px 2px;
+                  font-size: 10px;
+                  letter-spacing: 0.08em;
+                  text-transform: uppercase;
+                  color: var(--text-dim);
+                "
+              >
+                Export image
+              </div>
+              <div class="tb-preset-item" data-action="pngTransparent">PNG · Transparent</div>
+              <div class="tb-preset-item" data-action="pngWhite">PNG · White BG</div>
+              <div class="tb-preset-item" data-action="svgExport">SVG · Vector</div>
+              <div class="tb-preset-sep"></div>
+              <div
+                class="tb-preset-label"
+                style="
+                  padding: 6px 12px 2px;
+                  font-size: 10px;
+                  letter-spacing: 0.08em;
+                  text-transform: uppercase;
+                  color: var(--text-dim);
+                "
+              >
+                Resolution
+              </div>
+              <div class="tb-preset-item" style="padding: 4px 12px 10px">
+                <select data-bind="dpi" id="dpiSelect" class="select-control" style="width: 100%">
+                  <option value="72">72 DPI · screen</option>
+                  <option value="150">150 DPI · web</option>
+                  <option value="300" selected>300 DPI · print</option>
+                  <option value="600">600 DPI · high quality</option>
+                  <option value="1200">1200 DPI · max</option>
+                </select>
+              </div>
+            </div>
           </div>
+
+          <!-- Right editor panel toggle -->
+          <button
+            class="tb-icon"
+            id="rightPanelToggle"
+            title="Toggle editor panel (])"
+            aria-pressed="true"
+          >
+            <svg
+              viewBox="0 0 16 16"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="2" y="3" width="12" height="10" rx="1.2" />
+              <path d="M10 3v10" />
+            </svg>
+          </button>
+
+          <!-- Hidden legacy hooks (kept so app.js wiring stays safe) -->
+          <button id="saveBtn" hidden aria-hidden="true"></button>
+          <button id="presetsDropdown" hidden aria-hidden="true"></button>
+          <div id="presetsMenu" hidden aria-hidden="true"></div>
+        </div>
+      </header>
+
+      <!-- ═══════════════════ WORK AREA ═══════════════════ -->
+      <div class="work-area">
+        <!-- ─── UNIFIED TOOL RAIL ─── -->
+        <aside class="tool-rail-panel" id="toolRailPanel" aria-label="Tools">
+          <button
+            class="tb-edge-toggle"
+            id="sidebarToggle"
+            title="Toggle sidebar ([)"
+            aria-pressed="true"
+          >
+            <svg
+              viewBox="0 0 16 16"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="2" y="3" width="12" height="10" rx="1.2" />
+              <path d="M6 3v10"></path>
+            </svg>
+          </button>
+          <div class="tool-rail-panel-inner">
+            <!-- Layers -->
+            <div class="ts-section">
+              <div class="ts-head">
+                <span class="ts-head-label">
+                  <svg
+                    viewBox="0 0 14 14"
+                    width="11"
+                    height="11"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M7 2l5 3-5 3-5-3 5-3z" />
+                    <path d="M2 8l5 3 5-3" />
+                  </svg>
+                  Layers
+                </span>
+                <svg
+                  class="ts-chevron"
+                  data-ts="layers"
+                  viewBox="0 0 12 12"
+                  width="10"
+                  height="10"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                >
+                  <path d="M3 5l3 3 3-3" />
+                </svg>
+              </div>
+              <div class="ts-body" data-ts-body="layers">
+                <div id="layerList" class="layer-list"></div>
+              </div>
+            </div>
+
+            <!-- Add Layer -->
+            <div class="ts-section">
+              <div class="ts-head">
+                <span class="ts-head-label">
+                  <svg
+                    viewBox="0 0 14 14"
+                    width="11"
+                    height="11"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                  >
+                    <path d="M7 3v8M3 7h8" />
+                  </svg>
+                  Add more
+                </span>
+                <svg
+                  class="ts-chevron"
+                  data-ts="add"
+                  viewBox="0 0 12 12"
+                  width="10"
+                  height="10"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                >
+                  <path d="M3 5l3 3 3-3" />
+                </svg>
+              </div>
+              <div class="ts-body" data-ts-body="add">
+                <div class="tool-menu-list">
+                  <button class="tool-menu-btn" id="addCurved">
+                    <svg
+                      viewBox="0 0 16 16"
+                      width="14"
+                      height="14"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                    >
+                      <path d="M2 11a6 6 0 0 1 12 0" />
+                    </svg>
+                    <span>Curved Text</span>
+                  </button>
+                  <button class="tool-menu-btn" id="addLine">
+                    <svg
+                      viewBox="0 0 16 16"
+                      width="14"
+                      height="14"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                    >
+                      <path d="M2 8h12" />
+                      <path d="M4 5v6M12 5v6" />
+                    </svg>
+                    <span>Straight Text</span>
+                  </button>
+                  <button class="tool-menu-btn" id="addShape">
+                    <svg
+                      viewBox="0 0 16 16"
+                      width="14"
+                      height="14"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M8 2l1.8 3.6 4 .6-2.9 2.8.7 4L8 11l-3.6 2 .7-4L2.2 6.2l4-.6z" />
+                    </svg>
+                    <span>Shape</span>
+                  </button>
+                  <button class="tool-menu-btn" id="importLogo">
+                    <svg
+                      viewBox="0 0 16 16"
+                      width="14"
+                      height="14"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <rect x="2" y="3" width="12" height="10" rx="1" />
+                      <circle cx="6" cy="7" r="1.2" />
+                      <path d="M2 11l3.5-3 3 2.5L11 8l3 3" />
+                    </svg>
+                    <span>Logo / Image</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stamp Shape presets -->
+            <div class="ts-section">
+              <div class="ts-head">
+                <span class="ts-head-label">
+                  <svg
+                    viewBox="0 0 14 14"
+                    width="11"
+                    height="11"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  >
+                    <circle cx="7" cy="7" r="5.5" />
+                  </svg>
+                  Stamp Templates
+                </span>
+                <svg
+                  class="ts-chevron"
+                  data-ts="stampShape"
+                  viewBox="0 0 12 12"
+                  width="10"
+                  height="10"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                >
+                  <path d="M3 5l3 3 3-3" />
+                </svg>
+              </div>
+              <div class="ts-body" data-ts-body="stampShape">
+                <div class="ls-tpl-chips">
+                  <button class="tpl-chip" data-template="doubleRing" title="Two concentric rings">
+                    <svg viewBox="0 0 40 40" class="tpl-thumb">
+                      <circle
+                        cx="20"
+                        cy="20"
+                        r="17"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                      />
+                      <circle
+                        cx="20"
+                        cy="20"
+                        r="12"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.4"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    class="tpl-chip"
+                    data-template="tripleRing"
+                    title="Three concentric rings"
+                  >
+                    <svg viewBox="0 0 40 40" class="tpl-thumb">
+                      <circle
+                        cx="20"
+                        cy="20"
+                        r="17"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                      />
+                      <circle
+                        cx="20"
+                        cy="20"
+                        r="12.5"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.4"
+                      />
+                      <circle
+                        cx="20"
+                        cy="20"
+                        r="8"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1"
+                      />
+                    </svg>
+                  </button>
+                  <button class="tpl-chip" data-template="oval" title="Horizontal oval">
+                    <svg viewBox="0 0 40 40" class="tpl-thumb">
+                      <ellipse
+                        cx="20"
+                        cy="20"
+                        rx="18"
+                        ry="11"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      />
+                      <ellipse
+                        cx="20"
+                        cy="20"
+                        rx="14"
+                        ry="7.5"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.2"
+                      />
+                    </svg>
+                  </button>
+                  <button class="tpl-chip" data-template="rectangle" title="Rectangle">
+                    <svg viewBox="0 0 40 40" class="tpl-thumb">
+                      <rect
+                        x="3"
+                        y="10"
+                        width="34"
+                        height="20"
+                        rx="2"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      />
+                      <rect
+                        x="6"
+                        y="13"
+                        width="28"
+                        height="14"
+                        rx="1.2"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.2"
+                      />
+                    </svg>
+                  </button>
+                  <button class="tpl-chip" data-template="square" title="Square">
+                    <svg viewBox="0 0 40 40" class="tpl-thumb">
+                      <rect
+                        x="6"
+                        y="6"
+                        width="28"
+                        height="28"
+                        rx="4"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      />
+                    </svg>
+                  </button>
+                  <button class="tpl-chip" data-template="minimalCircle" title="Minimal thin ring">
+                    <svg viewBox="0 0 40 40" class="tpl-thumb">
+                      <circle
+                        cx="20"
+                        cy="20"
+                        r="16"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.2"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Export -->
+          </div>
+        </aside>
+
+        <!-- ─── CANVAS VIEWPORT ─── -->
+        <section class="viewport" id="viewport" aria-label="Stamp canvas">
+          <div class="stage" id="stage">
+            <canvas id="stampCanvas"></canvas>
+          </div>
+
+          <!-- Floating zoom HUD -->
+          <div class="zoombar" role="toolbar" aria-label="Zoom controls">
+            <button id="zoomOut" title="Zoom out (-)">
+              <svg
+                viewBox="0 0 16 16"
+                width="12"
+                height="12"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              >
+                <path d="M4 8h8" />
+              </svg>
+            </button>
+            <span id="zoomRead" class="zoom-label">100%</span>
+            <button id="zoomIn" title="Zoom in (+)">
+              <svg
+                viewBox="0 0 16 16"
+                width="12"
+                height="12"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+              >
+                <path d="M8 4v8M4 8h8" />
+              </svg>
+            </button>
+            <div class="zoombar-sep"></div>
+            <button id="zoomFit" title="Fit to screen (F)">Fit</button>
+            <button id="zoom100" title="Zoom 100% (0)">1:1</button>
+            <button id="zoomReset" title="Reset view (recenter & 100%)">
+              <svg
+                viewBox="0 0 16 16"
+                width="12"
+                height="12"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M3 8a5 5 0 1 0 1.5-3.5L3 6" />
+                <path d="M3 3v3h3" />
+              </svg>
+            </button>
+            <button id="zoomHalf" title="Zoom 50%">½</button>
+            <div class="zoombar-sep"></div>
+            <label class="zoombar-toggle" title="Toggle alignment guides (G)">
+              <input type="checkbox" id="showGuides" checked />
+              <svg
+                viewBox="0 0 14 14"
+                width="12"
+                height="12"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+              >
+                <path d="M2 7h10M7 2v10" />
+              </svg>
+            </label>
+          </div>
+        </section>
+
+        <!-- ─── FLOATING RIGHT EDITOR PANEL ─── -->
+        <aside class="right-editor-panel" id="rightEditorPanel" aria-label="Editor">
+          <div class="rep-header">
+            <span class="rep-title">Editor</span>
+            <button class="rep-close" id="rightPanelClose">&times;</button>
+          </div>
+          <div class="rep-body" id="repBody"></div>
+        </aside>
+      </div>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <div
+      class="shortcuts-overlay"
+      id="shortcutsOverlay"
+      role="dialog"
+      aria-label="Keyboard shortcuts"
+    >
+      <div class="shortcuts-modal">
+        <div class="shortcuts-header">
+          <span class="prop-label">Keyboard Shortcuts</span>
+          <button class="shortcuts-close" id="shortcutsClose" aria-label="Close">&times;</button>
+        </div>
+        <div class="shortcuts-body">
+          <div class="shortcut-row"><kbd>Click</kbd><span>Select layer on canvas</span></div>
+          <div class="shortcut-row"><kbd>Drag</kbd><span>Move selected layer</span></div>
+          <div class="shortcut-row"><kbd>Ctrl+Click</kbd><span>Toggle multi-select</span></div>
+          <div class="shortcut-row"><kbd>F</kbd><span>Fit stamp to viewport</span></div>
+          <div class="shortcut-row"><kbd>0</kbd><span>Reset zoom to 100%</span></div>
+          <div class="shortcut-row"><kbd>+</kbd> / <kbd>-</kbd><span>Zoom in / out</span></div>
+          <div class="shortcut-row"><kbd>G</kbd><span>Toggle alignment guides</span></div>
+          <div class="shortcut-row"><kbd>Ctrl+S</kbd><span>Save project</span></div>
+          <div class="shortcut-row"><kbd>Ctrl+A</kbd><span>Select all layers</span></div>
+          <div class="shortcut-row"><kbd>Ctrl+Z</kbd><span>Undo</span></div>
+          <div class="shortcut-row"><kbd>Ctrl+Y</kbd><span>Redo</span></div>
+          <div class="shortcut-row"><kbd>Delete</kbd><span>Delete selected layer</span></div>
+          <div class="shortcut-row"><kbd>?</kbd><span>Toggle this panel</span></div>
         </div>
       </div>
-
-
-
-      <!-- Export -->
-      </div>
-
-    </aside>
-
-    <!-- ─── CANVAS VIEWPORT ─── -->
-    <section class="viewport" id="viewport" aria-label="Stamp canvas">
-      <div class="stage" id="stage">
-        <canvas id="stampCanvas"></canvas>
-      </div>
-
-      <!-- Floating zoom HUD -->
-      <div class="zoombar" role="toolbar" aria-label="Zoom controls">
-        <button id="zoomOut" title="Zoom out (-)">
-          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 8h8"/></svg>
-        </button>
-        <span id="zoomRead" class="zoom-label">100%</span>
-        <button id="zoomIn" title="Zoom in (+)">
-          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 4v8M4 8h8"/></svg>
-        </button>
-        <div class="zoombar-sep"></div>
-        <button id="zoomFit" title="Fit to screen (F)">Fit</button>
-        <button id="zoom100" title="Zoom 100% (0)">1:1</button>
-        <button id="zoomReset" title="Reset view (recenter & 100%)">
-          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a5 5 0 1 0 1.5-3.5L3 6"/><path d="M3 3v3h3"/></svg>
-        </button>
-        <button id="zoomHalf" title="Zoom 50%">½</button>
-        <div class="zoombar-sep"></div>
-        <label class="zoombar-toggle" title="Toggle alignment guides (G)">
-          <input type="checkbox" id="showGuides" checked>
-          <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 7h10M7 2v10"/></svg>
-        </label>
-      </div>
-
-    </section>
-
-    <!-- ─── FLOATING RIGHT EDITOR PANEL ─── -->
-    <aside class="right-editor-panel" id="rightEditorPanel" aria-label="Editor">
-      <div class="rep-header">
-        <span class="rep-title">Editor</span>
-        <button class="rep-close" id="rightPanelClose">&times;</button>
-      </div>
-      <div class="rep-body" id="repBody"></div>
-    </aside>
-
-  </div>
-</div>
-
-<div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-<div class="shortcuts-overlay" id="shortcutsOverlay" role="dialog" aria-label="Keyboard shortcuts">
-  <div class="shortcuts-modal">
-    <div class="shortcuts-header">
-      <span class="prop-label">Keyboard Shortcuts</span>
-      <button class="shortcuts-close" id="shortcutsClose" aria-label="Close">&times;</button>
     </div>
-    <div class="shortcuts-body">
-      <div class="shortcut-row"><kbd>Click</kbd><span>Select layer on canvas</span></div>
-      <div class="shortcut-row"><kbd>Drag</kbd><span>Move selected layer</span></div>
-      <div class="shortcut-row"><kbd>Ctrl+Click</kbd><span>Toggle multi-select</span></div>
-      <div class="shortcut-row"><kbd>F</kbd><span>Fit stamp to viewport</span></div>
-      <div class="shortcut-row"><kbd>0</kbd><span>Reset zoom to 100%</span></div>
-      <div class="shortcut-row"><kbd>+</kbd> / <kbd>-</kbd><span>Zoom in / out</span></div>
-      <div class="shortcut-row"><kbd>G</kbd><span>Toggle alignment guides</span></div>
-      <div class="shortcut-row"><kbd>Ctrl+S</kbd><span>Save project</span></div>
-      <div class="shortcut-row"><kbd>Ctrl+A</kbd><span>Select all layers</span></div>
-      <div class="shortcut-row"><kbd>Ctrl+Z</kbd><span>Undo</span></div>
-      <div class="shortcut-row"><kbd>Ctrl+Y</kbd><span>Redo</span></div>
-      <div class="shortcut-row"><kbd>Delete</kbd><span>Delete selected layer</span></div>
-      <div class="shortcut-row"><kbd>?</kbd><span>Toggle this panel</span></div>
-    </div>
-  </div>
-</div>
 
-
-<script src="app.js"></script>
-</body>
+    <script src="app.js"></script>
+  </body>
 </html>
