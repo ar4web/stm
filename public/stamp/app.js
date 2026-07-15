@@ -4685,3 +4685,188 @@ init();
     if (panel.style.left) applyPos(parseFloat(panel.style.left), parseFloat(panel.style.top));
   });
 })();
+
+/* ═══════════════════════════════════════════════════════════════
+   Floating panels: draggable Layers + Position + close buttons
+   ═══════════════════════════════════════════════════════════════ */
+(function initFloatingPanels() {
+  function makeDraggable(panel, storageKey) {
+    if (!panel) return;
+    const header = panel.querySelector(".fp-header");
+    if (!header) return;
+
+    function applyPos(left, top) {
+      const parent = panel.parentElement;
+      const pr = parent.getBoundingClientRect();
+      const w = panel.offsetWidth || 260;
+      left = Math.max(0, Math.min(left, pr.width - Math.min(w, pr.width)));
+      top = Math.max(0, Math.min(top, pr.height - 40));
+      panel.style.left = left + "px";
+      panel.style.top = top + "px";
+      panel.style.right = "auto";
+      panel.style.bottom = "auto";
+    }
+    try {
+      const s = JSON.parse(localStorage.getItem(storageKey) || "null");
+      if (s && typeof s.left === "number") applyPos(s.left, s.top);
+    } catch (_) {}
+
+    let dragging = false, sx = 0, sy = 0, ox = 0, oy = 0;
+    header.addEventListener("pointerdown", (e) => {
+      if (e.target.closest(".fp-close")) return;
+      if (e.button !== 0 && e.pointerType === "mouse") return;
+      const pr = panel.parentElement.getBoundingClientRect();
+      const r = panel.getBoundingClientRect();
+      ox = r.left - pr.left; oy = r.top - pr.top;
+      sx = e.clientX; sy = e.clientY;
+      dragging = true;
+      panel.classList.add("fp-dragging");
+      header.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+    header.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      applyPos(ox + (e.clientX - sx), oy + (e.clientY - sy));
+    });
+    function end(e) {
+      if (!dragging) return;
+      dragging = false;
+      panel.classList.remove("fp-dragging");
+      try { header.releasePointerCapture(e.pointerId); } catch (_) {}
+      try {
+        localStorage.setItem(storageKey, JSON.stringify({
+          left: parseFloat(panel.style.left) || 0,
+          top: parseFloat(panel.style.top) || 0,
+        }));
+      } catch (_) {}
+    }
+    header.addEventListener("pointerup", end);
+    header.addEventListener("pointercancel", end);
+  }
+
+  makeDraggable(document.getElementById("layersPanel"), "stamp.layersPanelPos");
+  makeDraggable(document.getElementById("positionPanel"), "stamp.positionPanelPos");
+
+  document.querySelectorAll("[data-fp-close]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-fp-close");
+      const el = document.getElementById(id);
+      if (el) el.hidden = true;
+    });
+  });
+})();
+
+/* ═══════════════════════════════════════════════════════════════
+   Position panel: arrange / align / advanced transform
+   ═══════════════════════════════════════════════════════════════ */
+(function initPositionPanel() {
+  const panel = document.getElementById("positionPanel");
+  if (!panel) return;
+
+  function currentLayer() {
+    try { return (typeof selLayer === "function") ? selLayer() : null; } catch (_) { return null; }
+  }
+  function refresh() {
+    const l = currentLayer();
+    if (!l) { panel.hidden = true; return; }
+    panel.hidden = false;
+    const posX = document.getElementById("posX");
+    const posY = document.getElementById("posY");
+    const posW = document.getElementById("posW");
+    const posH = document.getElementById("posH");
+    const posRot = document.getElementById("posRot");
+    if (posX) posX.value = (l.offsetXmm ?? 0);
+    if (posY) posY.value = (l.offsetYmm ?? 0);
+    if (l.type === "shape") {
+      if (posW) { posW.disabled = false; posW.value = l.shapeSizeMm ?? 10; }
+      if (posH) { posH.disabled = true; posH.value = l.shapeSizeMm ?? 10; }
+    } else if (l.type === "image") {
+      if (posW) { posW.disabled = false; posW.value = l.imageWidthMm ?? 20; }
+      if (posH) { posH.disabled = false; posH.value = l.imageHeightMm ?? 20; }
+    } else {
+      if (posW) { posW.disabled = true; posW.value = ""; }
+      if (posH) { posH.disabled = true; posH.value = ""; }
+    }
+    if (posRot) posRot.value = (l.shapeRotation ?? 0);
+  }
+
+  function commit(msg) {
+    try { if (typeof render === "function") render(); } catch (_) {}
+    try { if (typeof buildLayerList === "function") buildLayerList(); } catch (_) {}
+    try { if (typeof pushHistory === "function") pushHistory(); } catch (_) {}
+    try { if (msg && typeof toast === "function") toast(msg); } catch (_) {}
+  }
+
+  // Arrange
+  panel.querySelectorAll("[data-pos-arrange]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const l = currentLayer(); if (!l || !cfg?.layers) return;
+      const i = cfg.layers.indexOf(l);
+      if (i < 0) return;
+      const arr = cfg.layers;
+      const op = btn.getAttribute("data-pos-arrange");
+      arr.splice(i, 1);
+      if (op === "forward") arr.splice(Math.min(arr.length, i + 1), 0, l);
+      else if (op === "backward") arr.splice(Math.max(0, i - 1), 0, l);
+      else if (op === "front") arr.push(l);
+      else if (op === "back") arr.unshift(l);
+      commit();
+    });
+  });
+
+  // Align to page (stamp bounds)
+  panel.querySelectorAll("[data-pos-align]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const l = currentLayer(); if (!l) return;
+      const W = cfg.width || cfg.size || 40;
+      const H = cfg.height || cfg.size || 40;
+      const margin = 3;
+      const dir = btn.getAttribute("data-pos-align");
+      if (dir === "top")    l.offsetYmm = -(H / 2 - margin);
+      if (dir === "bottom") l.offsetYmm =  (H / 2 - margin);
+      if (dir === "middle") l.offsetYmm = 0;
+      if (dir === "left")   l.offsetXmm = -(W / 2 - margin);
+      if (dir === "right")  l.offsetXmm =  (W / 2 - margin);
+      if (dir === "center") l.offsetXmm = 0;
+      commit();
+      refresh();
+    });
+  });
+
+  // Advanced inputs
+  function bindNum(id, fn) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("input", () => {
+      const l = currentLayer(); if (!l) return;
+      const v = parseFloat(el.value);
+      if (isNaN(v)) return;
+      fn(l, v);
+      try { if (typeof render === "function") render(); } catch (_) {}
+    });
+    el.addEventListener("change", () => commit());
+  }
+  bindNum("posX", (l, v) => { l.offsetXmm = v; });
+  bindNum("posY", (l, v) => { l.offsetYmm = v; });
+  bindNum("posRot", (l, v) => { l.shapeRotation = v; });
+  bindNum("posW", (l, v) => {
+    if (l.type === "shape") l.shapeSizeMm = Math.max(1, v);
+    else if (l.type === "image") l.imageWidthMm = Math.max(1, v);
+  });
+  bindNum("posH", (l, v) => {
+    if (l.type === "image") l.imageHeightMm = Math.max(1, v);
+  });
+
+  // Refresh whenever the layer list rebuilds
+  if (typeof buildLayerList === "function") {
+    const origBLL = buildLayerList;
+    window.buildLayerList = function () {
+      const r = origBLL.apply(this, arguments);
+      refresh();
+      return r;
+    };
+  }
+  refresh();
+  // Poll as a safety net for selection changes we don't hook cleanly
+  setInterval(refresh, 400);
+})();
