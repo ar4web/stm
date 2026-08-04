@@ -78,7 +78,7 @@ body {
   font-size: 13px;
   color: var(--text);
   background:
-    radial-gradient(ellipse 1200px 600px at 20% -10%, rgba(79, 70, 229, 0.15), transparent 60%),
+    radial-gradient(ellipse 1200px 600px at 20% -10%, rgba(0,0,0,0.15), transparent 60%),
     radial-gradient(ellipse 900px 500px at 100% 110%, rgba(124, 58, 237, 0.12), transparent 60%),
     var(--bg-app);
   -webkit-font-smoothing: antialiased;
@@ -247,13 +247,13 @@ h5,
   color: #fff;
   border-color: transparent;
   font-weight: 600;
-  box-shadow: 0 4px 14px -4px rgba(79, 70, 229, 0.5);
+  box-shadow: 0 4px 14px -4px rgba(0,0,0,0.5);
 }
 .tb-menubtn:hover {
   background: var(--grad-accent);
   color: #fff;
   filter: brightness(1.1);
-  box-shadow: 0 6px 20px -4px rgba(79, 70, 229, 0.7);
+  box-shadow: 0 6px 20px -4px rgba(0,0,0,0.7);
 }
 
 /* Toolbar shape draggables (topbar) */
@@ -659,7 +659,7 @@ h5,
   color: var(--accent-2);
   border-color: var(--border-glow);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px -6px rgba(79, 70, 229, 0.5);
+  box-shadow: 0 4px 12px -6px rgba(0,0,0,0.5);
 }
 .tpl-chip.active {
   color: #fff;
@@ -1135,7 +1135,7 @@ input[type="range"]::-webkit-slider-thumb {
   transition: box-shadow 0.15s;
 }
 input[type="range"]::-webkit-slider-thumb:hover {
-  box-shadow: 0 0 0 5px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 0 0 5px rgba(0,0,0,0.3);
 }
 input[type="range"]::-moz-range-thumb {
   width: 14px;
@@ -1504,10 +1504,10 @@ input[type="range"]::-moz-range-thumb {
 @keyframes flash {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+    box-shadow: 0 0 0 0 rgba(0,0,0,0);
   }
   50% {
-    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.4);
+    box-shadow: 0 0 0 4px rgba(0,0,0,0.4);
   }
 }
 
