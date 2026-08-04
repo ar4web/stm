@@ -697,7 +697,8 @@ h5,
   border-color: var(--border);
   background: var(--bg-hover);
 }
-.layer-item.selected {
+.layer-item.selected,
+.layer-item.active {
   background: var(--select-soft);
   border-color: var(--select-border);
   box-shadow:
@@ -705,14 +706,18 @@ h5,
     0 0 0 1px var(--select-border);
   color: var(--text);
 }
-.layer-item.selected .layer-name {
+.layer-item.selected .layer-name,
+.layer-item.active .layer-name {
   color: var(--select);
   font-weight: 600;
 }
 .layer-item.selected .layer-icon,
-.layer-item.selected .layer-vis {
+.layer-item.selected .layer-vis,
+.layer-item.active .layer-icon,
+.layer-item.active .layer-vis {
   color: var(--select);
 }
+
 
 .layer-item--stamp {
   background: linear-gradient(180deg, rgba(255,255,255,0.05), transparent);
