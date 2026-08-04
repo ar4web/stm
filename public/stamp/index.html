@@ -489,28 +489,22 @@
           </div>
         </section>
 
-        <!-- ─── FLOATING RIGHT EDITOR PANEL ─── -->
-        <aside class="right-editor-panel" id="rightEditorPanel" aria-label="Editor">
+        <!-- ─── FLOATING LAYERS + EDITOR PANEL (merged) ─── -->
+        <aside class="right-editor-panel" id="rightEditorPanel" aria-label="Layers and editor">
           <div class="rep-header">
-            <span class="rep-title">Editor</span>
+            <span class="rep-title">Layers &amp; Editor</span>
             <button class="rep-close" id="rightPanelClose">&times;</button>
           </div>
-          <div class="rep-body" id="repBody"></div>
+          <div class="rep-scroll">
+            <div class="rep-layers">
+              <div class="rep-sub">Layers</div>
+              <div id="layerList" class="layer-list"></div>
+            </div>
+            <div class="rep-divider"></div>
+            <div class="rep-body" id="repBody"></div>
+          </div>
         </aside>
 
-        <!-- ─── FLOATING LAYERS PANEL ─── -->
-        <aside class="floating-panel layers-panel" id="layersPanel" aria-label="Layers">
-          <div class="fp-header">
-            <span class="fp-title">
-              <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M7 2l5 3-5 3-5-3 5-3z" /><path d="M2 8l5 3 5-3" /></svg>
-              Layers
-            </span>
-            <button class="fp-close" data-fp-close="layersPanel" title="Hide">&times;</button>
-          </div>
-          <div class="fp-body">
-            <div id="layerList" class="layer-list"></div>
-          </div>
-        </aside>
 
         <!-- ─── FLOATING POSITION PANEL ─── -->
         <aside class="floating-panel position-panel" id="positionPanel" aria-label="Position" hidden>
