@@ -79,7 +79,7 @@ body {
   color: var(--text);
   background:
     radial-gradient(ellipse 1200px 600px at 20% -10%, rgba(0,0,0,0.15), transparent 60%),
-    radial-gradient(ellipse 900px 500px at 100% 110%, rgba(124, 58, 237, 0.12), transparent 60%),
+    radial-gradient(ellipse 900px 500px at 100% 110%, rgba(255,255,255,0.03), transparent 60%),
     var(--bg-app);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
