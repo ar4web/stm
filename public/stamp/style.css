@@ -4,39 +4,45 @@
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Surfaces — deep midnight indigo */
-  --bg-app: #08081a;
-  --bg-canvas: #0a0a1e;
-  --bg-panel: #0f0f26;
-  --bg-panel-2: #141432;
-  --bg-elev: #1a1a3a;
-  --bg-hover: rgba(99, 102, 241, 0.08);
-  --bg-active: rgba(99, 102, 241, 0.18);
+  /* Surfaces — neutral graphite gray */
+  --bg-app: #17181a;
+  --bg-canvas: #1c1d20;
+  --bg-panel: #212327;
+  --bg-panel-2: #26282d;
+  --bg-elev: #2c2f34;
+  --bg-hover: rgba(255, 255, 255, 0.06);
+  --bg-active: rgba(255, 255, 255, 0.12);
 
-  /* Borders — thin luminous seams */
-  --border: rgba(140, 140, 200, 0.1);
-  --border-strong: rgba(140, 140, 200, 0.22);
-  --border-glow: rgba(99, 102, 241, 0.35);
+  /* Borders */
+  --border: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --border-glow: rgba(255, 255, 255, 0.3);
 
   /* Text */
-  --text: #eef0ff;
-  --text-dim: #a5a5c6;
-  --text-muted: #6a6a90;
+  --text: #f2f3f5;
+  --text-dim: #adb1b8;
+  --text-muted: #7c8189;
 
-  /* Brand — electric indigo */
-  --accent: #4f46e5;
-  --accent-hi: #6366f1;
-  --accent-2: #818cf8;
-  --accent-bg: rgba(79, 70, 229, 0.16);
-  --accent-soft: rgba(99, 102, 241, 0.08);
-  --accent-glow: 0 0 0 1px rgba(99, 102, 241, 0.35), 0 8px 28px -8px rgba(79, 70, 229, 0.55);
+  /* Brand — neutral gray */
+  --accent: #8b9099;
+  --accent-hi: #a4a9b2;
+  --accent-2: #d5d8dd;
+  --accent-bg: rgba(255, 255, 255, 0.1);
+  --accent-soft: rgba(255, 255, 255, 0.05);
+  --accent-glow: 0 0 0 1px rgba(255, 255, 255, 0.22), 0 8px 28px -8px rgba(0, 0, 0, 0.6);
   --danger: #ef4444;
   --success: #10b981;
 
+  /* Selection highlight — the one saturated color, marks the active layer */
+  --select: #38bdf8;
+  --select-soft: rgba(56, 189, 248, 0.16);
+  --select-border: rgba(56, 189, 248, 0.55);
+
   /* Gradients */
-  --grad-panel: linear-gradient(180deg, rgba(30, 30, 90, 0.35) 0%, rgba(15, 15, 38, 0.6) 100%);
-  --grad-accent: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-  --grad-hair: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.35), transparent);
+  --grad-panel: linear-gradient(180deg, rgba(45, 48, 53, 0.92) 0%, rgba(30, 32, 36, 0.94) 100%);
+  --grad-accent: linear-gradient(135deg, #55595f 0%, #3a3d42 100%);
+  --grad-hair: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+
 
   /* Radii */
   --r-xs: 4px;
