@@ -1642,3 +1642,24 @@ input[type="range"]::-moz-range-thumb {
   .position-panel { right: 14px; bottom: 340px; }
   .layers-panel { max-height: 40vh; }
 }
+
+/* ─── Position panel nested inside merged Layers & Editor panel ─── */
+.rep-scroll .position-panel {
+  position: static;
+  width: auto;
+  max-height: none;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.rep-scroll .position-panel[hidden] { display: none; }
+.rep-scroll .position-panel .fp-header {
+  cursor: default;
+  padding: 10px 12px 4px;
+  border-bottom: none;
+  background: transparent;
+}
+.rep-scroll .position-panel .fp-close { display: none; }
