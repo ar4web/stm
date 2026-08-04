@@ -831,7 +831,7 @@ h5,
 .viewport {
   position: relative;
   background:
-    radial-gradient(circle at 50% 50%, rgba(79, 70, 229, 0.05), transparent 60%), var(--bg-canvas);
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.04), transparent 60%), var(--bg-canvas);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -857,7 +857,7 @@ h5,
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.05),
     0 40px 100px -20px rgba(0, 0, 0, 0.8),
-    0 0 60px rgba(79, 70, 229, 0.2);
+    0 0 60px rgba(0,0,0,0.35);
   border-radius: 2px;
   background: #fff;
 }
@@ -1131,7 +1131,7 @@ input[type="range"]::-webkit-slider-thumb {
   background: var(--accent);
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.35);
   transition: box-shadow 0.15s;
 }
 input[type="range"]::-webkit-slider-thumb:hover {
@@ -1563,7 +1563,7 @@ input[type="range"]::-moz-range-thumb {
 /* ─── FLOATING PANELS (Layers + Position) ─── */
 .floating-panel {
   position: absolute;
-  background: color-mix(in srgb, var(--panel, #12122a) 92%, transparent);
+  background: color-mix(in srgb, var(--bg-panel, #212327) 92%, transparent);
   backdrop-filter: blur(14px) saturate(140%);
   border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
   border-radius: 12px;
