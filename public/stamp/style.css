@@ -114,13 +114,13 @@ h5,
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(99, 102, 241, 0.18);
+  background: rgba(255,255,255,0.16);
   border: 2px solid transparent;
   background-clip: padding-box;
   border-radius: 8px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.32);
+  background: rgba(255,255,255,0.28);
   background-clip: padding-box;
   border: 2px solid transparent;
 }
@@ -175,7 +175,7 @@ h5,
 .logo-img {
   width: 26px;
   height: 26px;
-  filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5));
+  filter: drop-shadow(0 0 8px rgba(255,255,255,0.35));
 }
 .logo-text {
   font-family: var(--font-display);
@@ -744,7 +744,7 @@ h5,
   text-transform: uppercase;
   padding: 2px 6px;
   border-radius: 3px;
-  background: rgba(99, 102, 241, 0.14);
+  background: rgba(255,255,255,0.12);
   color: var(--accent-2);
 }
 .layer-actions {
@@ -830,8 +830,8 @@ h5,
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(99, 102, 241, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+    linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
   background-size: 32px 32px;
   pointer-events: none;
   mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
