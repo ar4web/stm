@@ -4689,23 +4689,18 @@ init();
     try {
       header.releasePointerCapture(e.pointerId);
     } catch (_) {}
-    try {
-      localStorage.setItem(
-        STORAGE,
-        JSON.stringify({
-          left: parseFloat(panel.style.left) || 0,
-          top: parseFloat(panel.style.top) || 0,
-        }),
-      );
-    } catch (_) {}
+    savePos();
   }
   header.addEventListener("pointerup", end);
   header.addEventListener("pointercancel", end);
 
   window.addEventListener("resize", () => {
-    if (panel.style.left) applyPos(parseFloat(panel.style.left), parseFloat(panel.style.top));
+    if (!panel.style.left) return;
+    applyPos(parseFloat(panel.style.left), parseFloat(panel.style.top));
+    savePos();
   });
 })();
+
 
 /* ═══════════════════════════════════════════════════════════════
    Floating panels: draggable Layers + Position + close buttons
