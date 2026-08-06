@@ -6,9 +6,6 @@ Design round, oval, rectangular, and custom stamps entirely in the browser — n
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Made with TanStack Start](https://img.shields.io/badge/built%20with-TanStack%20Start-6366F1)
-![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-ar4web.github.io%2Fstamp--studio-6366F1)](https://ar4web.github.io/stm/)
-
 ## ✨ Features
 
 - 🎨 **Preset templates** — Circle, Double Ring, Triple Ring, Oval, Rectangle, Square, Minimal.
@@ -80,7 +77,7 @@ Good first issues:
 
 ![Stamp Studio editor](./assets/screenshot.png)
 
-▶ **[Live demo — ar4web.github.io/stamp-studio](https://ar4web.github.io/stm/)**
+
 
 ## 📄 License
 
