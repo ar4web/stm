@@ -4614,12 +4614,33 @@ init();
   if (!header) return;
 
   const STORAGE = "stamp.editorPanelPos";
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE) || "null");
-    if (saved && typeof saved.left === "number" && typeof saved.top === "number") {
-      applyPos(saved.left, saved.top);
-    }
-  } catch (_) {}
+
+  function savePos() {
+    try {
+      localStorage.setItem(
+        STORAGE,
+        JSON.stringify({
+          left: parseFloat(panel.style.left) || 0,
+          top: parseFloat(panel.style.top) || 0,
+        }),
+      );
+    } catch (_) {}
+  }
+
+  function restorePos() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE) || "null");
+      if (saved && typeof saved.left === "number" && typeof saved.top === "number") {
+        applyPos(saved.left, saved.top);
+      }
+    } catch (_) {}
+  }
+
+  // Restore once now, and again after layout settles (panel size/fonts ready)
+  restorePos();
+  requestAnimationFrame(restorePos);
+  window.addEventListener("load", restorePos, { once: true });
+
 
   function applyPos(left, top) {
     const parent = panel.parentElement;
@@ -4668,23 +4689,18 @@ init();
     try {
       header.releasePointerCapture(e.pointerId);
     } catch (_) {}
-    try {
-      localStorage.setItem(
-        STORAGE,
-        JSON.stringify({
-          left: parseFloat(panel.style.left) || 0,
-          top: parseFloat(panel.style.top) || 0,
-        }),
-      );
-    } catch (_) {}
+    savePos();
   }
   header.addEventListener("pointerup", end);
   header.addEventListener("pointercancel", end);
 
   window.addEventListener("resize", () => {
-    if (panel.style.left) applyPos(parseFloat(panel.style.left), parseFloat(panel.style.top));
+    if (!panel.style.left) return;
+    applyPos(parseFloat(panel.style.left), parseFloat(panel.style.top));
+    savePos();
   });
 })();
+
 
 /* ═══════════════════════════════════════════════════════════════
    Floating panels: draggable Layers + Position + close buttons
@@ -4744,8 +4760,9 @@ init();
     header.addEventListener("pointercancel", end);
   }
 
-  makeDraggable(document.getElementById("layersPanel"), "stamp.layersPanelPos");
-  makeDraggable(document.getElementById("positionPanel"), "stamp.positionPanelPos");
+  // layersPanel + positionPanel are now nested inside #rightEditorPanel,
+  // which owns its own drag + saved position.
+
 
   document.querySelectorAll("[data-fp-close]").forEach((btn) => {
     btn.addEventListener("click", () => {
