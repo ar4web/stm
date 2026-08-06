@@ -4614,12 +4614,33 @@ init();
   if (!header) return;
 
   const STORAGE = "stamp.editorPanelPos";
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE) || "null");
-    if (saved && typeof saved.left === "number" && typeof saved.top === "number") {
-      applyPos(saved.left, saved.top);
-    }
-  } catch (_) {}
+
+  function savePos() {
+    try {
+      localStorage.setItem(
+        STORAGE,
+        JSON.stringify({
+          left: parseFloat(panel.style.left) || 0,
+          top: parseFloat(panel.style.top) || 0,
+        }),
+      );
+    } catch (_) {}
+  }
+
+  function restorePos() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE) || "null");
+      if (saved && typeof saved.left === "number" && typeof saved.top === "number") {
+        applyPos(saved.left, saved.top);
+      }
+    } catch (_) {}
+  }
+
+  // Restore once now, and again after layout settles (panel size/fonts ready)
+  restorePos();
+  requestAnimationFrame(restorePos);
+  window.addEventListener("load", restorePos, { once: true });
+
 
   function applyPos(left, top) {
     const parent = panel.parentElement;
