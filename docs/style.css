@@ -391,6 +391,8 @@ h5,
 }
 
 .tb-right {
+  display: flex;
+  align-items: center;
   gap: 6px;
 }
 
