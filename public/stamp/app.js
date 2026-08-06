@@ -4760,8 +4760,9 @@ init();
     header.addEventListener("pointercancel", end);
   }
 
-  makeDraggable(document.getElementById("layersPanel"), "stamp.layersPanelPos");
-  makeDraggable(document.getElementById("positionPanel"), "stamp.positionPanelPos");
+  // layersPanel + positionPanel are now nested inside #rightEditorPanel,
+  // which owns its own drag + saved position.
+
 
   document.querySelectorAll("[data-fp-close]").forEach((btn) => {
     btn.addEventListener("click", () => {
