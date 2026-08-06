@@ -520,10 +520,7 @@ h5,
 
 /* Sidebar edge toggle */
 .tb-edge-toggle {
-  position: absolute;
-  top: 12px;
-  right: -14px;
-  z-index: 20;
+  margin-left: auto;
   width: 28px;
   height: 28px;
   display: inline-flex;
@@ -539,12 +536,6 @@ h5,
 .tb-edge-toggle:hover {
   color: var(--accent-2);
   border-color: var(--border-glow);
-}
-.work-area.sidebar-collapsed .tb-edge-toggle {
-  right: auto;
-  left: 12px;
-  position: fixed;
-  top: calc(var(--topbar-h) + 12px);
 }
 
 /* Section (accordion) */
