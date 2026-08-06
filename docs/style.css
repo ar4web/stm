@@ -1625,8 +1625,8 @@ input[type="range"]::-moz-range-thumb {
 .pos-field input:focus { outline: none; border-color: var(--accent, #8b9099); }
 
 /* Templates grid 3 cols with labels */
-.ls-tpl-chips--grid3 { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 8px; }
-.ls-tpl-chips--grid3 .tpl-chip { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; }
+.ls-tpl-chips--grid3 { display: grid !important; grid-template-columns: 1fr !important; gap: 8px; }
+.ls-tpl-chips--grid3 .tpl-chip { display: flex; flex-direction: column; align-items: stretch; gap: 4px; padding: 8px 4px; width: 100%; box-sizing: border-box; }
 .tpl-label { font-size: 10px; color: var(--text-dim, #98a0b5); font-weight: 500; letter-spacing: 0.02em; }
 .ts-section--card { background: rgba(255,255,255,0.02); border-radius: 10px; margin: 6px 0; }
 
